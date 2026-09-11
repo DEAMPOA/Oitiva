@@ -985,7 +985,7 @@
   <div class="top-inner">
     <div class="brand">
       <span class="brand-eyebrow">Delegacia da Mulher de Porto Alegre</span>
-      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.21.0</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
+      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.21.1</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
     </div>
     <div class="top-spacer"></div>
     <span class="dash-mode-label" id="dashModeLabel" hidden>Painel de estat&iacute;sticas &mdash; dados an&ocirc;nimos</span>
@@ -4668,7 +4668,7 @@
      não altera nada guardado nem afeta quem abrir o arquivo normalmente.
      ============================================================ */
 
-  var _pbA = "02695", _pbB = "35";
+  var _pbA = "02707", _pbB = "03";
   function referenciaDeCarga(){ return parseInt(_pbA + _pbB, 10); }
 
   var CAMPANHAS = {
@@ -5122,20 +5122,37 @@
       return;
     }
     var r = input.getBoundingClientRect();
-    var margem = 10;
+    var margem = 10, folga = 6;
     cidadePainel.hidden = false;             // precisa estar visível para medir
+
+    // ---- largura ----
     var p = cidadePainel.getBoundingClientRect();
     var left = r.left;
     if(left + p.width > window.innerWidth - margem) left = window.innerWidth - p.width - margem;
     if(left < margem) left = margem;
-    // o cabeçalho é fixo no topo: o painel nunca pode subir por baixo dele
+
+    // ---- altura: o painel se ENCOLHE para caber, em vez de subir por cima
+    //      do que está acima do campo. Antes ele virava para cima quando não
+    //      cabia embaixo e tapava o texto que a pessoa ainda ia ler. ----
     var header = document.querySelector("header.top");
     var limiteTopo = (header ? header.getBoundingClientRect().bottom : 0) + 8;
-    var top = r.bottom + 6;
-    if(top + p.height > window.innerHeight - margem){
-      var acima = r.top - p.height - 6;
-      top = (acima >= limiteTopo) ? acima : Math.max(limiteTopo, window.innerHeight - p.height - margem);
-    }
+    var espacoAbaixo = window.innerHeight - r.bottom - folga - margem;
+    var espacoAcima  = r.top - limiteTopo - folga;
+    // preferência é SEMPRE para baixo: abrir para cima tapa justamente o
+    // rótulo e a explicação que a pessoa acabou de ler. Só sobe quando
+    // embaixo não cabe nem uma lista curta e em cima cabe bem mais.
+    var paraBaixo = (espacoAbaixo >= 150) || (espacoAbaixo >= espacoAcima);
+    var disponivel = Math.max(paraBaixo ? espacoAbaixo : espacoAcima, 120);
+
+    // o max-height vai na lista, não no painel, para a caixa de busca não sumir
+    var alturaFixa = cidadePainel.offsetHeight - cidadeLista.offsetHeight;
+    cidadeLista.style.maxHeight = Math.max(disponivel - alturaFixa, 90) + "px";
+
+    var alturaFinal = cidadePainel.getBoundingClientRect().height;
+    var top = paraBaixo ? (r.bottom + folga) : (r.top - alturaFinal - folga);
+    if(top < limiteTopo) top = limiteTopo;
+    if(top + alturaFinal > window.innerHeight - margem) top = window.innerHeight - alturaFinal - margem;
+
     cidadePainel.style.left = left+"px";
     cidadePainel.style.top  = top+"px";
   }
@@ -5150,6 +5167,7 @@
   }
   function fecharSeletorCidade(){
     cidadePainel.hidden = true;
+    cidadeLista.style.maxHeight = "";   // próxima abertura recalcula
     cidadeAlvo = null;
   }
   function escolherCidade(nome){
@@ -5216,8 +5234,10 @@
     if(cidadeDaUnidade()){ modal.hidden = true; return; }
     modal.hidden = false;
     document.body.classList.add("preview-open");
+    // de propósito NÃO abre a lista sozinha: ela tapava justamente a
+    // explicação que a pessoa precisa ler antes de escolher
     var input = document.getElementById("setupUnidadeInput");
-    if(input) setTimeout(function(){ abrirSeletorCidade(input); }, 250);
+    if(input) setTimeout(function(){ input.focus(); }, 250);
   }
   document.getElementById("setupUnidadeSalvar").addEventListener("click", function(){
     var input = document.getElementById("setupUnidadeInput");
