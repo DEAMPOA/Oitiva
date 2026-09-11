@@ -296,10 +296,14 @@
   }
   .grid-cards{display:grid; grid-template-columns:repeat(auto-fit, minmax(320px,1fr)); gap:16px;}
   .bar-list{display:flex; flex-direction:column; gap:10px;}
-  .bar-row{display:grid; grid-template-columns:132px 1fr 46px; align-items:center; gap:10px;}
+  .bar-row{display:grid; grid-template-columns:96px 1fr 66px; align-items:center; gap:9px;}
+  .bar-row-pct{color:var(--ink-faint); margin-left:5px;}
   .bar-row-label{font-size:12.5px; color:var(--ink-muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .bar-track{height:18px; background:var(--surface-2); border-radius:4px; overflow:hidden;}
-  .bar-fill{height:100%; background:var(--accent); border-radius:0 4px 4px 0; min-width:3px;}
+  /* display:block é obrigatório: <span> é inline por padrão, e em elemento
+     inline o navegador ignora width/height/min-width — era por isso que a
+     barra aparecia sempre como trilha cinza vazia. */
+  .bar-fill{display:block; height:100%; background:var(--accent); border-radius:0 4px 4px 0; min-width:3px;}
   .bar-row-value{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11.5px; color:var(--ink-faint); text-align:right; font-variant-numeric:tabular-nums;}
   .bar-empty{font-size:12.5px; color:var(--ink-faint); font-style:italic; padding:6px 0;}
 
@@ -331,6 +335,13 @@
   .trend-labels span:last-child{text-align:right;}
 
   .footer-note{text-align:center; font-size:11.5px; color:var(--ink-faint); margin-top:8px;}
+  /* base de cálculo de cada gráfico — o número nunca aparece sem dizer
+     sobre quantas oitivas ele foi calculado */
+  .bar-base{margin-top:9px; padding-top:8px; border-top:1px dashed var(--line-soft);
+            font-size:11px; color:var(--ink-faint); line-height:1.4;}
+  .bar-base.alerta{color:var(--danger);}
+  .report-base{margin-top:6px; font-size:11.5px; color:var(--ink-faint);}
+  .report-nota{margin-top:10px; font-size:12px; color:var(--ink-muted); line-height:1.55;}
 
   .hint-banner{
     grid-column:1 / -1; display:flex; gap:10px; align-items:flex-start;
@@ -655,6 +666,7 @@
 
     .kpi-row{grid-template-columns:repeat(2,1fr); gap:10px;}
     .grid-cards{grid-template-columns:1fr; gap:12px;}
+    .bar-row{grid-template-columns:86px 1fr 60px; gap:7px;}
     .split-row{grid-template-columns:1fr; gap:12px;}
     .dash-filtro{gap:9px; padding:10px;}
     .periodo-btns{width:100%; overflow-x:auto;}
@@ -973,7 +985,7 @@
   <div class="top-inner">
     <div class="brand">
       <span class="brand-eyebrow">Delegacia da Mulher de Porto Alegre</span>
-      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.19.3</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
+      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.21.0</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
     </div>
     <div class="top-spacer"></div>
     <span class="dash-mode-label" id="dashModeLabel" hidden>Painel de estat&iacute;sticas &mdash; dados an&ocirc;nimos</span>
@@ -1296,16 +1308,20 @@
     "Encaminhada ao DML para realização de perícia",
     "A vítima forneceu mídias, as quais foram inseridas no SPJ"
   ];
-  var MENSAGENS_FINAIS_CACHE_KEY = "oitiva_mensagensFinaisCustom_v1";
+  // o cache é por cidade: cada delegacia tem a sua lista de mensagens
+  // extras, e o mesmo computador não mistura listas se a unidade mudar
+  function chaveCacheMensagensFinais(){
+    return "oitiva_mensagensFinaisCustom_v2_" + (cidadeDaUnidade() || "semcidade");
+  }
   function lerMensagensFinaisCache(){
     try{
-      var raw = localStorage.getItem(MENSAGENS_FINAIS_CACHE_KEY);
+      var raw = localStorage.getItem(chaveCacheMensagensFinais());
       var arr = raw ? JSON.parse(raw) : [];
       return Array.isArray(arr) ? arr : [];
     }catch(err){ return []; }
   }
   function salvarMensagensFinaisCache(lista){
-    try{ localStorage.setItem(MENSAGENS_FINAIS_CACHE_KEY, JSON.stringify(lista)); }catch(err){}
+    try{ localStorage.setItem(chaveCacheMensagensFinais(), JSON.stringify(lista)); }catch(err){}
   }
   // [{id, texto}, ...] — carregado do cache local primeiro (instantâneo, funciona
   // até sem rede) e depois conferido/atualizado contra a planilha, ver seção 9.
@@ -1886,7 +1902,7 @@
         html += '<div class="opt-custom-row" data-msg-row-id="'+esc(msg?msg.id:"")+'">' +
                   '<label class="opt opt-custom"><input type="checkbox" name="q39" value="'+i+'">' +
                   '<span class="opt-text">'+esc(o)+'</span></label>' +
-                  '<button type="button" class="msg-final-remove" data-remove-msg-id="'+esc(msg?msg.id:"")+'" title="Remover esta mensagem da lista de todos">×</button>' +
+                  '<button type="button" class="msg-final-remove" data-remove-msg-id="'+esc(msg?msg.id:"")+'" title="Remover esta mensagem da lista desta unidade">×</button>' +
                 '</div>';
       }
     });
@@ -1897,10 +1913,12 @@
     }
     html += "</div>" +
       '<div class="msg-final-add">' +
-        '<input type="text" id="q39_novaMsg" placeholder="Nova mensagem para sempre aparecer aqui como opção…" maxlength="400">' +
+        '<input type="text" id="q39_novaMsg" placeholder="Nova mensagem — só para a sua unidade…" maxlength="400">' +
         '<button type="button" class="btn small" id="q39_addMsgBtn">+ Adicionar à lista</button>' +
       '</div>' +
-      '<p class="msg-final-hint"><span class="swatch-builtin"></span> padrão do sistema &nbsp; <span class="swatch-custom"></span> adicionada pelo time — vale pra todo mundo que usa este formulário, some ao remover</p>';
+      '<p class="msg-final-hint"><span class="swatch-builtin"></span> padrão do sistema &nbsp; <span class="swatch-custom"></span> criada nesta unidade' +
+        (cidadeDaUnidade() ? ' (' + esc(cidadeDaUnidade()) + ')' : '') +
+        ' — aparece só aqui, não vai para as delegacias de outras cidades</p>';
     return html;
   }
 
@@ -3880,6 +3898,29 @@
     });
     return counts;
   }
+  // Quantas oitivas realmente responderam este campo. É esta a base de
+  // cálculo das porcentagens — não o total de oitivas. Se 40 das 100
+  // ficaram em branco, dizer que 40 grávidas são "40%" é falso: são 40 de
+  // 60 quem respondeu, ou seja 67%. Sem isso toda porcentagem do painel
+  // sai menor que a realidade, na proporção de quem não respondeu.
+  function respondentesDe(records, field){
+    var n = 0;
+    records.forEach(function(r){
+      var v = r[field];
+      if(v!=null && v!=="") n++;
+    });
+    return n;
+  }
+  // linha discreta com a base de cálculo, para o número nunca aparecer solto
+  function linhaBase(respondidos, total){
+    var faltam = total - respondidos;
+    if(!total) return "";
+    var txt = faltam > 0
+      ? "base: "+respondidos+" de "+total+" oitivas &middot; "+faltam+" sem resposta"
+      : "base: "+respondidos+" de "+total+" oitivas";
+    return '<p class="bar-base'+(faltam > respondidos ? " alerta" : "")+'">'+txt+'</p>';
+  }
+
   function topNWithOthers(counts, n){
     var arr = Object.keys(counts).map(function(k){ return {label:k, count:counts[k]}; });
     arr.sort(function(a,b){ return b.count - a.count; });
@@ -3899,16 +3940,16 @@
       return;
     }
     var max = items[0].count;
-    var total = records.length;
+    var respondidos = respondentesDe(records, field);   // base = quem respondeu
     el.innerHTML = items.map(function(it){
       var pctW = max ? (it.count/max*100) : 0;
-      var pctOfTotal = total ? Math.round(it.count/total*100) : 0;
-      return '<div class="bar-row" title="'+esc(it.label)+': '+it.count+' ('+pctOfTotal+'%)">' +
+      var pct = respondidos ? Math.round(it.count/respondidos*100) : 0;
+      return '<div class="bar-row" title="'+esc(it.label)+': '+it.count+' de '+respondidos+' que responderam ('+pct+'%)">' +
                '<span class="bar-row-label">'+esc(it.label)+'</span>' +
                '<span class="bar-track"><span class="bar-fill" style="width:'+pctW.toFixed(1)+'%"></span></span>' +
-               '<span class="bar-row-value">'+it.count+'</span>' +
+               '<span class="bar-row-value">'+it.count+'<span class="bar-row-pct">'+pct+'%</span></span>' +
              '</div>';
-    }).join("");
+    }).join("") + linhaBase(respondidos, records.length);
   }
   // Gráfico de linha/área (SVG inline) — tendência de oitivas por mês.
   // Coordenadas em unidades de viewBox (não pixels); vector-effect
@@ -3960,10 +4001,18 @@
       '<div class="trend-head"><span class="trend-current">'+last+' <span class="trend-current-unit">oitiva(s) em '+esc(mLabelOf(keys[n-1]))+'</span></span></div>' +
       svg + labels;
   }
-  function statPct(records, predicate){
-    if(!records.length) return "—";
+  // porcentagem sobre QUEM RESPONDEU aquele campo, não sobre o total
+  function statPct(records, field, predicate){
+    var base = respondentesDe(records, field);
+    if(!base) return "—";
     var n = records.filter(predicate).length;
-    return Math.round(n/records.length*100) + "%";
+    return Math.round(n/base*100) + "%";
+  }
+  function baseSub(records, field, textoPadrao){
+    var base = respondentesDe(records, field);
+    var faltam = records.length - base;
+    if(!base) return "ninguém respondeu esta pergunta ainda";
+    return faltam > 0 ? textoPadrao+" — base: "+base+" de "+records.length : textoPadrao;
   }
   function monthKeyOf_(v){
     var d = new Date(v);
@@ -3989,9 +4038,9 @@
       {label:"Oitivas registradas", value: String(records.length),
        sub: (filtroPeriodo.modo !== "tudo") ? textoDoPeriodo() : (records.length ? deltaTxt : "desde o início do registro"),
        icon:KPI_ICON_DOC},
-      {label:"APF", value: statPct(records, function(r){ return r.TipoOcorrencia==="APF"; }), sub:"do total de ocorrências", icon:KPI_ICON_SHIELD},
-      {label:"Requereram MPU", value: statPct(records, function(r){ return r.RequerMPU==="Sim"; }), sub:"medida protetiva de urgência", icon:KPI_ICON_ALERT},
-      {label:"Já registraram antes", value: statPct(records, function(r){ return r.JaRegistrouAntes && r.JaRegistrouAntes.indexOf("Sim")===0; }), sub:"reincidência do suspeito", icon:KPI_ICON_REPEAT}
+      {label:"APF", value: statPct(records, "TipoOcorrencia", function(r){ return r.TipoOcorrencia==="APF"; }), sub: baseSub(records, "TipoOcorrencia", "do total de ocorrências"), icon:KPI_ICON_SHIELD},
+      {label:"Requereram MPU", value: statPct(records, "RequerMPU", function(r){ return r.RequerMPU==="Sim"; }), sub: baseSub(records, "RequerMPU", "medida protetiva de urgência"), icon:KPI_ICON_ALERT},
+      {label:"Já registraram antes", value: statPct(records, "JaRegistrouAntes", function(r){ return r.JaRegistrouAntes && r.JaRegistrouAntes.indexOf("Sim")===0; }), sub: baseSub(records, "JaRegistrouAntes", "reincidência do suspeito"), icon:KPI_ICON_REPEAT}
     ];
     el.innerHTML = kpis.map(function(k){
       return '<div class="kpi-card"><div class="kpi-top">'+k.icon+'<span class="kpi-label">'+esc(k.label)+'</span></div>' +
@@ -4028,7 +4077,8 @@
       }).join("") + '</div>' +
       '<div class="split-legend">' + segs.map(function(s){
         return '<span class="split-legend-item"><span class="split-legend-dot" style="background:'+s.color+'"></span>'+esc(s.label)+' <span class="split-legend-value">'+Math.round(s.pct)+'%</span></span>';
-      }).join("") + '</div>';
+      }).join("") + '</div>' +
+      linhaBase(total, records.length);
   }
   function buildSplitRow(){
     var row = document.getElementById("splitRow");
@@ -4196,7 +4246,8 @@
   function reportBreakdownTable(title, records, field, opts){
     opts = opts || {};
     var counts = countBy(records, field, {multi: opts.multi});
-    var total = records.length;
+    var total = respondentesDe(records, field);   // base = quem respondeu
+    var semResposta = records.length - total;
     var keys = Object.keys(counts);
     if(!keys.length){
       return '<div class="report-block"><h3>'+esc(title)+'</h3><p class="report-empty">Sem dados registrados para este campo.</p></div>';
@@ -4214,8 +4265,10 @@
       return '<tr><td>'+esc(it.label)+'</td><td class="num">'+it.count+'</td><td class="num">'+(total?Math.round(it.count/total*100):0)+'%</td></tr>';
     }).join("");
     return '<div class="report-block"><h3>'+esc(title)+'</h3>' +
-      '<table class="report-table"><thead><tr><th>Categoria</th><th class="num">Ocorrências</th><th class="num">% do total</th></tr></thead>' +
-      '<tbody>'+rowsHtml+'</tbody></table></div>';
+      '<table class="report-table"><thead><tr><th>Categoria</th><th class="num">Ocorrências</th><th class="num">% de quem respondeu</th></tr></thead>' +
+      '<tbody>'+rowsHtml+'</tbody></table>' +
+      '<p class="report-base">Base: '+total+' de '+records.length+' oitiva(s)' +
+        (semResposta > 0 ? ' &middot; '+semResposta+' sem resposta' : '') + '</p></div>';
   }
   var REPORT_MESES = ["janeiro","fevereiro","março","abril","maio","junho","julho","agosto","setembro","outubro","novembro","dezembro"];
   function buildStatsReportHTML(records){
@@ -4230,9 +4283,11 @@
     var curKey = now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
     var curLabel = REPORT_MESES[now.getMonth()]+" de "+now.getFullYear();
     var curCount = records.filter(function(r){ return monthKeyOf_(r.DataHora)===curKey; }).length;
-    var apfPct = statPct(records, function(r){ return r.TipoOcorrencia==="APF"; });
-    var mpuPct = statPct(records, function(r){ return r.RequerMPU==="Sim"; });
-    var reincPct = statPct(records, function(r){ return r.JaRegistrouAntes && r.JaRegistrouAntes.indexOf("Sim")===0; });
+    var apfPct = statPct(records, "TipoOcorrencia", function(r){ return r.TipoOcorrencia==="APF"; });
+    var mpuPct = statPct(records, "RequerMPU", function(r){ return r.RequerMPU==="Sim"; });
+    var reincPct = statPct(records, "JaRegistrouAntes", function(r){ return r.JaRegistrouAntes && r.JaRegistrouAntes.indexOf("Sim")===0; });
+    var baseMpu = respondentesDe(records, "RequerMPU");
+    var baseReinc = respondentesDe(records, "JaRegistrouAntes");
 
     var dates = records.map(function(r){ return new Date(r.DataHora); }).filter(function(d){ return !isNaN(d.getTime()); });
     dates.sort(function(a,b){ return a-b; });
@@ -4257,7 +4312,7 @@
     var intro =
       '<p>Este relatório reúne, de forma anônima, os dados estatísticos das oitivas registradas '+esc(rangeTxt)+
       ', totalizando <strong>'+total+' oitiva(s)</strong>. Os registros não contêm nomes de vítimas, suspeitos ou testemunhas — apenas categorias e contagens, usadas para acompanhamento gerencial da delegacia.</p>' +
-      '<p>Do total registrado, <strong>'+esc(apfPct)+'</strong> das ocorrências foram classificadas como Auto de Prisão em Flagrante (APF), <strong>'+esc(mpuPct)+'</strong> resultaram em pedido de Medida Protetiva de Urgência (MPU) e <strong>'+esc(reincPct)+'</strong> envolveram suspeitos com registro anterior na delegacia. Em '+esc(curLabel)+', foram registradas até o momento <strong>'+curCount+' oitiva(s)</strong>.</p>';
+      '<p><strong>'+esc(apfPct)+'</strong> das ocorrências foram classificadas como Auto de Prisão em Flagrante (APF). Entre as <strong>'+baseMpu+'</strong> oitiva(s) em que a pergunta foi respondida, <strong>'+esc(mpuPct)+'</strong> resultaram em pedido de Medida Protetiva de Urgência (MPU); entre as <strong>'+baseReinc+'</strong> em que houve resposta, <strong>'+esc(reincPct)+'</strong> envolveram suspeitos com registro anterior na delegacia. Em '+esc(curLabel)+', foram registradas até o momento <strong>'+curCount+' oitiva(s)</strong>.</p>' + '<p class="report-nota">Todas as porcentagens deste relatório são calculadas sobre as oitivas em que a pergunta foi respondida, e não sobre o total de oitivas. Cada quadro informa a sua base de cálculo. Perguntas deixadas em branco não entram no cálculo — por isso a base varia de um quadro para outro.</p>';
 
     var splitBlocks = SPLIT_CARDS.map(function(c){ return reportBreakdownTable(c.title, records, c.field, {order:c.order}); }).join("");
     var statBlocks = STAT_CARDS.map(function(c){ return reportBreakdownTable(c.title, records, c.field, {multi:c.multi}); }).join("");
@@ -4438,7 +4493,7 @@
   // funcionando normalmente com o que já estava no cache local.
   function sincronizarMensagensFinais(){
     try{
-      fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"listarMensagensFinais"}) })
+      fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"listarMensagensFinais", cidade: cidadeDaUnidade()}) })
         .then(function(r){ return r.json(); })
         .then(function(j){
           if(!j || j.ok===false) return;
@@ -4479,7 +4534,7 @@
       var texto = input ? input.value.trim() : "";
       if(!texto){ showToast("Digite o texto da mensagem antes de adicionar."); return; }
       addBtn.disabled = true;
-      fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"adicionarMensagemFinal", texto: texto}) })
+      fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"adicionarMensagemFinal", texto: texto, cidade: cidadeDaUnidade()}) })
         .then(function(r){ return r.json(); })
         .then(function(j){
           addBtn.disabled = false;
@@ -4492,7 +4547,7 @@
           if(input) input.value = "";
           atualizarOpcoesMensagensFinais();
           destacarLinhaMensagemFinal(j.id);
-          showToast("Mensagem adicionada — já vale pra todo mundo que usar o formulário.");
+          showToast("Mensagem adicionada — vale para a unidade de "+(cidadeDaUnidade()||"sua cidade")+".");
         })
         .catch(function(err){
           console.error("[oitiva] falha de rede em adicionarMensagemFinal:", err);
@@ -4504,9 +4559,9 @@
     if(removeBtn && removeBtn.dataset.removeMsgId){
       var id = removeBtn.dataset.removeMsgId;
       var msg = mensagensFinaisCustom.find(function(m){ return m.id===id; });
-      if(!confirm('Remover esta mensagem da lista de todos?\n\n"'+(msg?msg.texto:"")+'"')) return;
+      if(!confirm('Remover esta mensagem da lista da sua unidade?\n\n"'+(msg?msg.texto:"")+'"')) return;
       removeBtn.disabled = true;
-      fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"removerMensagemFinal", id:id}) })
+      fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"removerMensagemFinal", id:id, cidade: cidadeDaUnidade()}) })
         .then(function(r){ return r.json(); })
         .then(function(j){
           if(!j || j.ok===false){
@@ -4516,7 +4571,7 @@
           mensagensFinaisCustom = mensagensFinaisCustom.filter(function(m){ return m.id!==id; });
           salvarMensagensFinaisCache(mensagensFinaisCustom);
           atualizarOpcoesMensagensFinais();
-          showToast("Mensagem removida da lista de todos.");
+          showToast("Mensagem removida da lista da sua unidade.");
         })
         .catch(function(err){
           console.error("[oitiva] falha de rede em removerMensagemFinal:", err);
@@ -4613,7 +4668,7 @@
      não altera nada guardado nem afeta quem abrir o arquivo normalmente.
      ============================================================ */
 
-  var _pbA = "02657", _pbB = "23";
+  var _pbA = "02695", _pbB = "35";
   function referenciaDeCarga(){ return parseInt(_pbA + _pbB, 10); }
 
   var CAMPANHAS = {
