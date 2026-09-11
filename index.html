@@ -557,6 +557,86 @@
     .credit-text{white-space:normal; text-align:right;}
   }
 
+  /* ============================================================
+     CELULAR — o arquivo passou a ser aberto por link, e boa parte
+     dos acessos é no telefone. Ajustes aqui: cabeçalho compacto
+     (ele é fixo e comia meio metro de tela), campos com 16px para
+     o iPhone não dar zoom ao tocar num input, alvos de toque
+     maiores e tudo em uma coluna só.
+     ============================================================ */
+  @media (max-width:720px){
+    header.top{padding:9px 14px;}
+    .top-inner{gap:9px;}
+    .brand{flex:1 1 100%;}
+    .brand-eyebrow{font-size:9px; letter-spacing:.06em;}
+    .brand-title{font-size:15px; line-height:1.25;}
+    .version-tag{display:none;}
+    .selo-campanha{margin-left:6px; font-size:9.5px; padding:3px 8px 3px 6px;}
+    .top-spacer{display:none;}
+    .progress-wrap{order:1;}
+    .progress-track{width:74px;}
+    .badge{font-size:9.5px; padding:4px 7px;}
+    .gender-btn{padding:6px 12px; font-size:12.5px;}
+    header.top .btn{padding:7px 10px; font-size:12px;}
+
+    .view-switch{padding:0 10px;}
+    .view-tab{font-size:12.5px; padding:11px 9px;}
+
+    main.layout{padding:12px 12px 16px; gap:14px;}
+    .section{padding:13px 13px 15px; border-radius:9px;}
+    .hint-banner{font-size:12.5px; padding:11px 12px; line-height:1.5;}
+    .field{margin-bottom:18px;}
+
+    /* 16px é o limite abaixo do qual o iOS dá zoom sozinho ao focar */
+    input[type="text"], textarea, .cidade-busca, .periodo-datas input{font-size:16px; padding:11px 12px;}
+    textarea{min-height:120px;}
+    .opt-outro-input{font-size:16px;}
+
+    /* alvo de toque confortável nas alternativas */
+    label.opt{padding:12px 12px; font-size:14px;}
+    .q-num{min-width:27px; height:25px; font-size:12.5px;}
+    .msg-final-add{flex-direction:column; align-items:stretch;}
+    .msg-final-add input{width:100%;}
+
+    .doc{font-size:13.5px; line-height:1.6;}
+    .panel-head{flex-wrap:wrap; gap:8px;}
+    .panel-head .btn{flex:1 1 auto; justify-content:center;}
+
+    /* no celular o seletor vira uma "gaveta" colada embaixo: ocupa a
+       largura toda e fica logo acima do teclado, sem depender de caber
+       ao lado do campo */
+    .cidade-painel{
+      left:10px !important; right:10px !important; width:auto !important;
+      top:auto !important; bottom:10px !important; padding:10px;
+    }
+    .cidade-lista{max-height:42vh;}
+    .cidade-item{padding:11px 10px; font-size:14px;}
+
+    .plantao-pop{right:10px; left:10px; bottom:66px; width:auto;}
+    .preview-overlay{padding:12px;}
+    .preview-modal{max-height:92vh;}
+    .preview-modal-body{padding:14px !important;}
+    .preview-modal-actions{flex-wrap:wrap; gap:8px;}
+    .preview-modal-actions .btn{flex:1 1 auto; justify-content:center;}
+
+    .kpi-row{grid-template-columns:repeat(2,1fr); gap:10px;}
+    .grid-cards{grid-template-columns:1fr; gap:12px;}
+    .split-row{grid-template-columns:1fr; gap:12px;}
+    .dash-filtro{gap:9px; padding:10px;}
+    .periodo-btns{width:100%; overflow-x:auto;}
+    .periodo-btn{flex:1 0 auto; padding:8px 10px;}
+    .periodo-resumo{margin-left:0; flex:1 1 100%;}
+    .dash-toolbar{flex-wrap:wrap; gap:8px;}
+
+    .credit-strip{padding:8px 12px;}
+    .credit-text{font-size:10px; line-height:1.35;}
+  }
+  @media (max-width:344px){
+    .brand-title{font-size:14px;}
+    .view-tab{font-size:11.5px; padding:10px 6px;}
+    .kpi-row{grid-template-columns:1fr;}
+  }
+
   .toast{
     position:fixed; bottom:64px; left:50%; transform:translateX(-50%) translateY(8px);
     background:var(--ink); color:var(--bg); font-size:13px; font-weight:500;
@@ -777,6 +857,75 @@
   }
   .alerta-x:hover{background:rgba(166,56,58,.14);}
 
+  /* ---------- filtro de período do painel ---------- */
+  .dash-filtro{
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap;
+    padding:11px 14px; margin-bottom:14px;
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+  }
+  .dash-filtro-label{
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:10.5px; font-weight:600;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--ink-faint);
+  }
+  .periodo-btns{display:flex; gap:2px; padding:2px; background:var(--surface-2); border-radius:8px;}
+  .periodo-btn{
+    font-family:inherit; font-size:12px; font-weight:600; color:var(--ink-muted);
+    background:transparent; border:none; border-radius:6px; padding:6px 11px; cursor:pointer;
+    transition:background .12s, color .12s;
+  }
+  .periodo-btn:hover{color:var(--ink);}
+  .periodo-btn.active{background:var(--accent); color:var(--accent-ink);}
+  .periodo-datas{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-muted);}
+  .periodo-datas input{
+    font-family:inherit; font-size:12px; color:var(--ink);
+    padding:5px 7px; border:1px solid var(--line); border-radius:6px; background:var(--surface);
+  }
+  .periodo-resumo{margin-left:auto; font-size:12px; color:var(--ink-muted);}
+  .periodo-resumo strong{color:var(--ink); font-weight:600;}
+
+  /* ---------- seletor de cidade (só da lista, sem digitação livre) ---------- */
+  .cidade-campo{position:relative; display:block;}
+  .cidade-campo input{width:100%; padding-right:32px; cursor:pointer; background:var(--surface);}
+  .cidade-campo input:focus{outline:2px solid var(--focus); outline-offset:1px;}
+  .cidade-limpar{
+    position:absolute; top:50%; right:7px; transform:translateY(-50%);
+    width:22px; height:22px; display:none; align-items:center; justify-content:center;
+    background:transparent; border:none; border-radius:5px;
+    color:var(--ink-faint); font-size:17px; line-height:1; cursor:pointer;
+  }
+  .cidade-campo input:not(:placeholder-shown) + .cidade-limpar{display:flex;}
+  .cidade-limpar:hover{background:var(--surface-2); color:var(--ink);}
+  .cidade-painel{
+    position:fixed; z-index:120;   /* acima do modal da unidade (z-index 100) */ width:300px; max-width:calc(100vw - 24px);
+    background:var(--surface); border:1px solid var(--line); border-radius:10px;
+    box-shadow:var(--shadow); padding:8px;
+  }
+  .cidade-painel[hidden]{display:none;}
+  .cidade-busca{
+    width:100%; padding:7px 9px; font-family:inherit; font-size:13px;
+    border:1px solid var(--line); border-radius:7px; background:var(--surface); color:var(--ink);
+  }
+  .cidade-lista{list-style:none; margin:7px 0 0; padding:0; max-height:216px; overflow-y:auto;}
+  .cidade-item{
+    padding:7px 9px; border-radius:6px; font-size:13px; line-height:1.35;
+    color:var(--ink); cursor:pointer;
+  }
+  .cidade-item:hover, .cidade-item.ativo{background:var(--accent-soft); color:var(--accent-strong);}
+  .cidade-vazio{margin:9px 4px 4px; font-size:12px; color:var(--ink-faint);}
+
+  /* ---------- configuração da unidade (perguntada uma vez, em modal) ---------- */
+  .setup-unidade-texto{font-size:13px; line-height:1.6; color:var(--ink-muted); margin-bottom:16px;}
+  .setup-unidade-texto strong{color:var(--ink); font-weight:600;}
+  .setup-unidade-rotulo{
+    display:block; font-size:13.5px; font-weight:600; color:var(--ink); margin-bottom:7px;
+  }
+  #setupUnidade .cidade-campo input{
+    width:100%; padding:9px 32px 9px 11px; font-family:inherit; font-size:13.5px;
+    border:1px solid var(--line); border-radius:7px; background:var(--surface); color:var(--ink);
+  }
+  .setup-unidade-erro{margin-top:9px; font-size:12.5px; color:var(--danger);}
+  .setup-unidade-erro[hidden]{display:none;}
+
   @media (prefers-reduced-motion: reduce){
     *{transition:none !important;}
     .hl-flash{animation:none; background:transparent;}
@@ -790,7 +939,7 @@
   <div class="top-inner">
     <div class="brand">
       <span class="brand-eyebrow">Delegacia da Mulher de Porto Alegre</span>
-      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.16.0</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
+      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.19.0</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
     </div>
     <div class="top-spacer"></div>
     <span class="dash-mode-label" id="dashModeLabel" hidden>Painel de estat&iacute;sticas &mdash; dados an&ocirc;nimos</span>
@@ -814,6 +963,28 @@
 <div class="alerta-integridade" id="alertaIntegridade" hidden>
   <strong>Aten&ccedil;&atilde;o:</strong> <span id="alertaIntegridadeTexto"></span>
   <button type="button" class="alerta-x" id="alertaIntegridadeX" aria-label="Fechar">&times;</button>
+</div>
+
+<div class="preview-overlay" id="setupUnidade" hidden>
+  <div class="preview-modal narrow" role="dialog" aria-modal="true" aria-labelledby="setupUnidadeTitulo">
+    <div class="preview-modal-head">
+      <h2 id="setupUnidadeTitulo">Qual a cidade desta unidade?</h2>
+    </div>
+    <div class="preview-modal-body">
+      <p class="setup-unidade-texto">Esta &eacute; a <strong>primeira vez que o formul&aacute;rio abre neste computador</strong>.
+      A cidade serve s&oacute; para separar as estat&iacute;sticas por delegacia &mdash; nenhum nome de v&iacute;tima ou
+      suspeito vai junto. &Eacute; perguntado uma vez e nunca mais.</p>
+      <label class="setup-unidade-rotulo" for="setupUnidadeInput">Cidade da unidade</label>
+      <div class="cidade-campo">
+        <input type="text" id="setupUnidadeInput" data-cidade-picker readonly placeholder="Clique para escolher a cidade">
+        <button type="button" class="cidade-limpar" data-cidade-limpar="setupUnidadeInput" title="Limpar cidade" tabindex="-1">&times;</button>
+      </div>
+      <p class="setup-unidade-erro" id="setupUnidadeErro" hidden>Escolha uma cidade da lista para continuar.</p>
+    </div>
+    <div class="preview-modal-actions">
+      <button type="button" class="btn primary" id="setupUnidadeSalvar">Confirmar e come&ccedil;ar</button>
+    </div>
+  </div>
 </div>
 
 <div class="view-switch">
@@ -849,6 +1020,21 @@
       <button class="btn small" id="printReportBtn" type="button">Imprimir relat&oacute;rio</button>
       <button class="btn small" id="refreshStatsBtn" type="button">Atualizar</button>
     </div>
+    <div class="dash-filtro">
+      <span class="dash-filtro-label">Per&iacute;odo</span>
+      <div class="periodo-btns" id="periodoBtns" role="group" aria-label="Per&iacute;odo dos dados">
+        <button type="button" class="periodo-btn" data-periodo="7">7 dias</button>
+        <button type="button" class="periodo-btn" data-periodo="30">30 dias</button>
+        <button type="button" class="periodo-btn" data-periodo="mes">Este m&ecirc;s</button>
+        <button type="button" class="periodo-btn" data-periodo="ano">Este ano</button>
+        <button type="button" class="periodo-btn active" data-periodo="tudo">Tudo</button>
+      </div>
+      <span class="periodo-datas">
+        <label for="periodoDe">de</label><input type="date" id="periodoDe">
+        <label for="periodoAte">at&eacute;</label><input type="date" id="periodoAte">
+      </span>
+      <span class="periodo-resumo" id="periodoResumo"></span>
+    </div>
     <div class="kpi-row" id="kpiRow"></div>
     <div class="split-row" id="splitRow"></div>
     <div class="card">
@@ -878,6 +1064,12 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<div class="cidade-painel" id="cidadePainel" hidden>
+  <input type="text" class="cidade-busca" id="cidadeBusca" autocomplete="off" spellcheck="false" placeholder="Digite para filtrar&hellip;" aria-label="Filtrar cidades">
+  <ul class="cidade-lista" id="cidadeLista" role="listbox"></ul>
+  <p class="cidade-vazio" id="cidadeVazio" hidden>Nenhuma cidade do RS com esse nome.</p>
+</div>
 
 <div class="plantao-pop" id="plantaoPop" hidden>
   <span class="plantao-turno" id="plantaoTurno"></span>
@@ -982,6 +1174,88 @@
   // sistema confere em segundo plano se a planilha tem alguma mensagem nova
   // ou removida e atualiza sozinho — ver sincronizarMensagensFinais() e
   // atualizarOpcoesMensagensFinais() mais adiante.
+  // Municípios do RS, com Porto Alegre em primeiro (lista enviada pelo
+  // usuário). Alimenta o campo "Local do fato" e a configuração da
+  // unidade — os dois usam a mesma <datalist>, que é montada uma vez só.
+  var CIDADES_RS = [
+    "Porto Alegre","Aceguá","Agudo","Ajuricaba","Alecrim","Alegrete","Alegria","Almirante Tamandaré do Sul",
+    "Alpestre","Alto Alegre","Alto Feliz","Alvorada","Amaral Ferrador","Ametista do Sul","André da Rocha",
+    "Anta Gorda","Antônio Prado","Arambaré","Araricá","Aratiba","Arroio do Meio","Arroio do Padre",
+    "Arroio do Sal","Arroio do Tigre","Arroio dos Ratos","Arroio Grande","Arvorezinha","Augusto Pestana",
+    "Bagé","Balneário Pinhal","Barra do Guarita","Barra do Quaraí","Barra do Ribeiro","Barra do Rio Azul",
+    "Barra Funda","Barracão","Barros Cassal","Barão","Barão de Cotegipe","Barão do Triunfo",
+    "Benjamin Constant do Sul","Bento Gonçalves","Boa Vista das Missões","Boa Vista do Buricá",
+    "Boa Vista do Cadeado","Boa Vista do Incra","Boa Vista do Sul","Bom Jesus","Bom Princípio",
+    "Bom Progresso","Bom Retiro do Sul","Boqueirão do Leão","Bossoroca","Bozano","Braga","Brochier","Butiá",
+    "Cacequi","Cachoeira do Sul","Cachoeirinha","Cacique Doble","Caibaté","Caiçara","Camaquã","Camargo",
+    "Cambará do Sul","Campestre da Serra","Campina das Missões","Campinas do Sul","Campo Bom","Campo Novo",
+    "Campos Borges","Candelária","Candiota","Canela","Canguçu","Canoas","Canudos do Vale","Capela de Santana",
+    "Capitão","Capivari do Sul","Capão Bonito do Sul","Capão da Canoa","Capão do Cipó","Capão do Leão",
+    "Carazinho","Caraá","Carlos Barbosa","Carlos Gomes","Casca","Caseiros","Catuípe","Caxias do Sul",
+    "Caçapava do Sul","Centenário","Cerrito","Cerro Branco","Cerro Grande","Cerro Grande do Sul",
+    "Cerro Largo","Chapada","Charqueadas","Charrua","Chiapetta","Chuvisca","Chuí","Cidreira","Ciríaco",
+    "Colinas","Colorado","Condor","Constantina","Coqueiro Baixo","Coqueiros do Sul","Coronel Barros",
+    "Coronel Bicaco","Coronel Pilar","Cotiporã","Coxilha","Crissiumal","Cristal","Cristal do Sul","Cruz Alta",
+    "Cruzaltense","Cruzeiro do Sul","Cândido Godói","David Canabarro","Derrubadas","Dezesseis de Novembro",
+    "Dilermando de Aguiar","Dois Irmãos","Dois Irmãos das Missões","Dois Lajeados","Dom Feliciano",
+    "Dom Pedrito","Dom Pedro de Alcântara","Dona Francisca","Doutor Maurício Cardoso","Doutor Ricardo",
+    "Eldorado do Sul","Encantado","Encruzilhada do Sul","Engenho Velho","Entre Rios do Sul","Entre-Ijuís",
+    "Erebango","Erechim","Ernestina","Erval Grande","Erval Seco","Esmeralda","Esperança do Sul","Espumoso",
+    "Estação","Esteio","Estrela","Estrela Velha","Estância Velha","Eugênio de Castro","Fagundes Varela",
+    "Farroupilha","Faxinal do Soturno","Faxinalzinho","Fazenda Vilanova","Feliz","Flores da Cunha",
+    "Floriano Peixoto","Fontoura Xavier","Formigueiro","Forquetinha","Fortaleza dos Valos",
+    "Frederico Westphalen","Garibaldi","Garruchos","Gaurama","General Câmara","Gentil","Getúlio Vargas",
+    "Giruá","Glorinha","Gramado","Gramado dos Loureiros","Gramado Xavier","Gravataí","Guabiju","Guaporé",
+    "Guarani das Missões","Guaíba","Harmonia","Herval","Herveiras","Horizontina","Hulha Negra","Humaitá",
+    "Ibarama","Ibiaçá","Ibiraiaras","Ibirapuitã","Ibirubá","Igrejinha","Ijuí","Ilópolis","Imbé","Imigrante",
+    "Independência","Inhacorá","Ipiranga do Sul","Ipê","Iraí","Itaara","Itacurubi","Itapuca","Itaqui","Itati",
+    "Itatiba do Sul","Ivorá","Ivoti","Jaboticaba","Jacuizinho","Jacutinga","Jaguari","Jaguarão","Jaquirana",
+    "Jari","Jóia","Júlio de Castilhos","Lagoa Bonita do Sul","Lagoa dos Três Cantos","Lagoa Vermelha",
+    "Lagoão","Lajeado","Lajeado do Bugre","Lavras do Sul","Liberato Salzano","Lindolfo Collor","Linha Nova",
+    "Machadinho","Mampituba","Manoel Viana","Maquiné","Maratá","Marau","Marcelino Ramos","Mariana Pimentel",
+    "Mariano Moro","Marques de Souza","Mata","Mato Castelhano","Mato Leitão","Mato Queimado",
+    "Maximiliano de Almeida","Maçambará","Minas do Leão","Miraguaí","Montauri","Monte Alegre dos Campos",
+    "Monte Belo do Sul","Montenegro","Mormaço","Morrinhos do Sul","Morro Redondo","Morro Reuter","Mostardas",
+    "Muitos Capões","Muliterno","Muçum","Nicolau Vergueiro","Nonoai","Nova Alvorada","Nova Araçá",
+    "Nova Bassano","Nova Boa Vista","Nova Bréscia","Nova Candelária","Nova Esperança do Sul","Nova Hartz",
+    "Nova Palma","Nova Petrópolis","Nova Prata","Nova Pádua","Nova Ramada","Nova Roma do Sul",
+    "Nova Santa Rita","Novo Barreiro","Novo Cabrais","Novo Hamburgo","Novo Machado","Novo Tiradentes",
+    "Novo Xingu","Não-Me-Toque","Osório","Paim Filho","Palmares do Sul","Palmeira das Missões","Palmitinho",
+    "Panambi","Pantano Grande","Paraí","Paraíso do Sul","Pareci Novo","Parobé","Passa-Sete",
+    "Passo do Sobrado","Passo Fundo","Paulo Bento","Paverama","Pedras Altas","Pedro Osório","Pejuçara",
+    "Pelotas","Picada Café","Pinhal","Pinhal da Serra","Pinhal Grande","Pinheirinho do Vale",
+    "Pinheiro Machado","Pinto Bandeira","Pirapó","Piratini","Planalto","Ponte Preta","Pontão","Porto Lucena",
+    "Porto Mauá","Porto Vera Cruz","Porto Xavier","Portão","Pouso Novo","Poço das Antas","Presidente Lucena",
+    "Progresso","Protásio Alves","Putinga","Quaraí","Quatro Irmãos","Quevedos","Quinze de Novembro",
+    "Redentora","Relvado","Restinga Sêca","Rio dos Índios","Rio Grande","Rio Pardo","Riozinho","Roca Sales",
+    "Rodeio Bonito","Rolador","Rolante","Ronda Alta","Rondinha","Roque Gonzales","Rosário do Sul",
+    "Sagrada Família","Saldanha Marinho","Salto do Jacuí","Salvador das Missões","Salvador do Sul",
+    "Sananduva","Sant'Ana do Livramento","Santa Bárbara do Sul","Santa Cecília do Sul","Santa Clara do Sul",
+    "Santa Cruz do Sul","Santa Margarida do Sul","Santa Maria","Santa Maria do Herval","Santa Rosa",
+    "Santa Tereza","Santa Vitória do Palmar","Santana da Boa Vista","Santiago","Santo Antônio da Patrulha",
+    "Santo Antônio das Missões","Santo Antônio do Palma","Santo Antônio do Planalto","Santo Augusto",
+    "Santo Cristo","Santo Expedito do Sul","Santo Ângelo","Sapiranga","Sapucaia do Sul","Sarandi","Seberi",
+    "Sede Nova","Segredo","Selbach","Senador Salgado Filho","Sentinela do Sul","Serafina Corrêa","Sertão",
+    "Sertão Santana","Sete de Setembro","Severiano de Almeida","Silveira Martins","Sinimbu","Sobradinho",
+    "Soledade","São Borja","São Domingos do Sul","São Francisco de Assis","São Francisco de Paula",
+    "São Gabriel","São Jerônimo","São Jorge","São José das Missões","São José do Herval",
+    "São José do Hortêncio","São José do Inhacorá","São José do Norte","São José do Ouro","São José do Sul",
+    "São José dos Ausentes","São João da Urtiga","São João do Polêsine","São Leopoldo","São Lourenço do Sul",
+    "São Luiz Gonzaga","São Marcos","São Martinho","São Martinho da Serra","São Miguel das Missões",
+    "São Nicolau","São Paulo das Missões","São Pedro da Serra","São Pedro das Missões","São Pedro do Butiá",
+    "São Pedro do Sul","São Sebastião do Caí","São Sepé","São Valentim","São Valentim do Sul",
+    "São Valério do Sul","São Vendelino","São Vicente do Sul","Sério","Tabaí","Tapejara","Tapera","Tapes",
+    "Taquara","Taquari","Taquaruçu do Sul","Tavares","Tenente Portela","Terra de Areia","Teutônia","Tio Hugo",
+    "Tiradentes do Sul","Toropi","Torres","Tramandaí","Travesseiro","Trindade do Sul","Triunfo",
+    "Três Arroios","Três Cachoeiras","Três Coroas","Três de Maio","Três Forquilhas","Três Palmeiras",
+    "Três Passos","Tucunduva","Tunas","Tupanci do Sul","Tupanciretã","Tupandi","Tuparendi","Turuçu",
+    "Ubiretama","Unistalda","União da Serra","Uruguaiana","Vacaria","Vale do Sol","Vale Real","Vale Verde",
+    "Vanini","Venâncio Aires","Vera Cruz","Veranópolis","Vespasiano Corrêa","Viadutos","Viamão",
+    "Vicente Dutra","Victor Graeff","Vila Flores","Vila Lângaro","Vila Maria","Vila Nova do Sul",
+    "Vista Alegre","Vista Alegre do Prata","Vista Gaúcha","Vitória das Missões","Westfália","Xangri-lá",
+    "Água Santa","Áurea"
+  ];
+
   var MENSAGENS_FINAIS_PADRAO = [
     "Orientada a encaminhar ao cartório da 1ª DEAM, no prazo de 5 dias úteis, provas complementares caso surjam, através do e-mail: deampoa2020@gmail.com",
     "Orientada a encaminhar ao cartório da 2ª DEAM, no prazo de 5 dias úteis, provas complementares caso surjam, através do e-mail: poa-2deam@pc.rs.gov.br",
@@ -1240,6 +1514,10 @@
          options:[{t:"não resultou em agravamento de doenças preexistentes."},{t:"resultou em agravamento de doenças preexistentes."}]},
         {id:"q28", type:"textarea", label:"ESCREVA O DEPOIMENTO DA VÍTIMA AQUI:", required:true, ai:true,
          placeholder:"RELATO COMPLETO — Quando? Onde? Quem? O quê? Como? Quanto? Por quê?"},
+        // Só alimenta a estatística: não entra em nenhum texto gerado
+        // (nenhum compositor referencia q41, e ele fica fora de DOC_BASE_IDS).
+        {id:"q41", type:"cidade", label:"Local do fato — cidade", required:true,
+         placeholder:"Clique para escolher a cidade"},
         {id:"q29", type:"radio", label:"Apresenta lesões visíveis?", required:true, outro:true,
          options:[{v:"nao", t:"Não"},{v:"sim", t:"Sim"}]},
         {id:"q30", type:"crimes", label:"Crimes sofridos para constar no histórico", required:true, outro:true,
@@ -1467,6 +1745,30 @@
     });
   }
 
+  /* ---- cidades: casar o que foi digitado com o nome oficial -------------
+     A pessoa digita "sao leopoldo", "SÃO LEOPOLDO" ou "Sao Leopoldo"; a
+     estatística precisa receber sempre "São Leopoldo", senão o mesmo
+     município vira três linhas diferentes no painel. Se o que foi digitado
+     não bater com nenhum município do RS (fato ocorrido em outro estado,
+     por exemplo), o texto é aceito como está — só com a primeira letra de
+     cada palavra em maiúscula. */
+  var _mapaCidades = null;
+  function chaveCidade(s){
+    return String(s==null?"":s).normalize("NFD").replace(/[̀-ͯ]/g,"")
+      .toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
+  }
+  function nomeOficialCidade(digitado){
+    var bruto = String(digitado==null?"":digitado).replace(/\s+/g," ").trim();
+    if(!bruto) return "";
+    if(!_mapaCidades){
+      _mapaCidades = {};
+      CIDADES_RS.forEach(function(c){ _mapaCidades[chaveCidade(c)] = c; });
+    }
+    var oficial = _mapaCidades[chaveCidade(bruto)];
+    if(oficial) return oficial;
+    return bruto.toLowerCase().replace(/(^|[\s'-])([a-zà-ú])/g, function(m,a,b){ return a+b.toUpperCase(); });
+  }
+
   function medirBloco(sel){
     var el = document.querySelector(sel);
     if(!el) return 0;
@@ -1590,6 +1892,15 @@
     }
     if(f.type==="text"){
       html += '<input type="text" id="'+f.id+'" name="'+f.id+'"'+(f.required?' required':'')+placeholderAttr(f.placeholder)+'>';
+    } else if(f.type==="cidade"){
+      // O campo em si é somente leitura: não dá para digitar nome nenhum
+      // nele. Clicar abre o seletor, que tem busca própria — a pessoa digita
+      // duas ou três letras e escolhe. Assim o valor gravado é SEMPRE um
+      // município do RS escrito do jeito oficial, sem erro de grafia.
+      html += '<div class="cidade-campo">' +
+                '<input type="text" id="'+f.id+'" name="'+f.id+'" data-cidade-picker readonly'+(f.required?' required':'')+placeholderAttr(f.placeholder)+'>' +
+                '<button type="button" class="cidade-limpar" data-cidade-limpar="'+f.id+'" title="Limpar cidade" tabindex="-1">&times;</button>' +
+              '</div>';
     } else if(f.type==="textarea"){
       html += '<textarea id="'+f.id+'" name="'+f.id+'"'+(f.required?' required':'')+placeholderAttr(f.placeholder)+'></textarea>';
     } else if(f.type==="radio"){
@@ -2103,7 +2414,10 @@
     state = {};
     Object.keys(FIELD_MAP).forEach(function(id){
       var f = FIELD_MAP[id];
-      if(f.type==="text" || f.type==="textarea"){
+      if(f.type==="cidade"){
+        var elc = document.getElementById(id);
+        state[id] = {text: elc ? nomeOficialCidade(elc.value) : ""};
+      } else if(f.type==="text" || f.type==="textarea"){
         var el = document.getElementById(id);
         state[id] = {text: el ? normalizeTypedText(id, el.value.trim()) : ""};
       } else if(f.type==="radio"){
@@ -2169,7 +2483,7 @@
     if(!f) return true;
     if(f.showIf && !f.showIf(state)) return true;
     if(f._section && f._section.showIf && !f._section.showIf(state)) return true;
-    if(f.type==="text" || f.type==="textarea") return !!T(id);
+    if(f.type==="text" || f.type==="textarea" || f.type==="cidade") return !!T(id);
     if(f.type==="radio") return !!(state[id] && state[id].chosen && (state[id].v!=="outro" || T(id)));
     if(f.type==="crimes") return L(id).length>0;
     if(f.type==="childpicker") return !!(state[id] && state[id].slots && state[id].slots.length>0);
@@ -3176,7 +3490,9 @@
       requerMpu: statLabel("q34", {sim:"Sim", nao:"Não", vigente:"Já possui MPU vigente"}),
       solicitaAbrigamento: statLabel("q35", {recusou:"Recusou", solicitou:"Solicitou"}),
       desejaRepresentar: statLabel("q37", {sim:"Sim", nao:"Não"}),
-      batalhao: T("q38")
+      batalhao: T("q38"),
+      localFato: T("q41"),
+      unidadeCidade: cidadeDaUnidade()
     };
   }
   // melhor esforço — nunca deve travar o "Limpar tudo" se a rede falhar.
@@ -3242,7 +3558,7 @@
     });
     FIELD_ORDER.forEach(function(id){
       var f = FIELD_MAP[id];
-      if(f.type==="text" || f.type==="textarea"){
+      if(f.type==="text" || f.type==="textarea" || f.type==="cidade"){
         var el = document.getElementById(id);
         data.fields[id] = el ? el.value : "";
       } else if(f.type==="radio"){
@@ -3288,7 +3604,7 @@
       var f = FIELD_MAP[id];
       var entry = data.fields[id];
       if(entry===undefined) return;
-      if(f.type==="text" || f.type==="textarea"){
+      if(f.type==="text" || f.type==="textarea" || f.type==="cidade"){
         var el = document.getElementById(id);
         if(el) el.value = entry || "";
       } else if(f.type==="radio"){
@@ -3629,7 +3945,9 @@
     var deltaTxt = delta===0 ? "estável em relação ao mês anterior"
       : (delta>0 ? "▲ "+delta+" em relação ao mês anterior" : "▼ "+Math.abs(delta)+" em relação ao mês anterior");
     var kpis = [
-      {label:"Oitivas registradas", value: String(records.length), sub: records.length ? deltaTxt : "desde o início do registro", icon:KPI_ICON_DOC},
+      {label:"Oitivas registradas", value: String(records.length),
+       sub: (filtroPeriodo.modo !== "tudo") ? textoDoPeriodo() : (records.length ? deltaTxt : "desde o início do registro"),
+       icon:KPI_ICON_DOC},
       {label:"APF", value: statPct(records, function(r){ return r.TipoOcorrencia==="APF"; }), sub:"do total de ocorrências", icon:KPI_ICON_SHIELD},
       {label:"Requereram MPU", value: statPct(records, function(r){ return r.RequerMPU==="Sim"; }), sub:"medida protetiva de urgência", icon:KPI_ICON_ALERT},
       {label:"Já registraram antes", value: statPct(records, function(r){ return r.JaRegistrouAntes && r.JaRegistrouAntes.indexOf("Sim")===0; }), sub:"reincidência do suspeito", icon:KPI_ICON_REPEAT}
@@ -3697,7 +4015,9 @@
     {id:"barLesoes", title:"Lesões visíveis", field:"LesoesVisiveis"},
     {id:"barDeficienciaVitima", title:"Vítima possui deficiência", field:"VitimaDeficiencia"},
     {id:"barGravidez", title:"Vítima grávida à época do fato", field:"VitimaGravida"},
-    {id:"barBatalhao", title:"Batalhão que apresentou", field:"Batalhao"}
+    {id:"barBatalhao", title:"Batalhão que apresentou", field:"Batalhao"},
+    {id:"barLocalFato", title:"Cidade do fato", field:"LocalFatoCidade", topN:15},
+    {id:"barUnidade", title:"Unidade que registrou", field:"UnidadeCidade", topN:15}
   ];
   function buildStatCardsGrid(){
     var grid = document.getElementById("cardsGrid");
@@ -3705,13 +4025,98 @@
       return '<div class="card"><div class="card-title">'+esc(c.title)+'</div><div class="bar-list" id="'+c.id+'"></div></div>';
     }).join("");
   }
+  /* ---- filtro de período -------------------------------------------------
+     Um recorte só, aplicado a TUDO que o painel mostra: os quatro números do
+     topo, as barras de proporção, o gráfico por mês, todos os gráficos de
+     barra e também o relatório de impressão. Assim não existe a chance de um
+     gráfico estar falando de um período e o outro de outro. */
+  var filtroPeriodo = { modo:"tudo", de:null, ate:null };
+
+  function dataDoInput(valor, fimDoDia){
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(valor||""));
+    if(!m) return null;
+    // montado como data local (não UTC) — senão "01/09" vira 31/08 no Brasil
+    return fimDoDia ? new Date(+m[1], +m[2]-1, +m[3], 23, 59, 59, 999)
+                    : new Date(+m[1], +m[2]-1, +m[3], 0, 0, 0, 0);
+  }
+  function limitesDoPeriodo(){
+    var agora = new Date();
+    var hojeFim = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate(), 23,59,59,999);
+    if(filtroPeriodo.modo === "custom"){
+      return { de: filtroPeriodo.de, ate: filtroPeriodo.ate };
+    }
+    if(filtroPeriodo.modo === "7" || filtroPeriodo.modo === "30"){
+      var dias = parseInt(filtroPeriodo.modo, 10);
+      var ini = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate() - (dias-1), 0,0,0,0);
+      return { de: ini, ate: hojeFim };
+    }
+    if(filtroPeriodo.modo === "mes"){
+      return { de: new Date(agora.getFullYear(), agora.getMonth(), 1, 0,0,0,0), ate: hojeFim };
+    }
+    if(filtroPeriodo.modo === "ano"){
+      return { de: new Date(agora.getFullYear(), 0, 1, 0,0,0,0), ate: hojeFim };
+    }
+    return { de:null, ate:null }; // "tudo"
+  }
+  function registrosFiltrados(){
+    var lim = limitesDoPeriodo();
+    if(!lim.de && !lim.ate) return lastStatsRecords;
+    return lastStatsRecords.filter(function(r){
+      var d = new Date(r.DataHora);
+      if(isNaN(d.getTime())) return false;  // sem data válida fica fora do recorte
+      if(lim.de && d < lim.de) return false;
+      if(lim.ate && d > lim.ate) return false;
+      return true;
+    });
+  }
+  function textoDoPeriodo(){
+    var lim = limitesDoPeriodo();
+    if(!lim.de && !lim.ate) return "todo o período registrado";
+    var fmt = function(d){ return d ? d.toLocaleDateString("pt-BR") : ""; };
+    if(lim.de && lim.ate) return fmt(lim.de)+" a "+fmt(lim.ate);
+    if(lim.de) return "a partir de "+fmt(lim.de);
+    return "até "+fmt(lim.ate);
+  }
+  function aplicarFiltroPeriodo(){
+    var registros = registrosFiltrados();
+    var resumo = document.getElementById("periodoResumo");
+    if(resumo){
+      resumo.innerHTML = "<strong>"+registros.length+"</strong> "+(registros.length===1?"oitiva":"oitivas")+" — "+esc(textoDoPeriodo());
+    }
+    renderStatsAll(registros);
+  }
+  document.getElementById("periodoBtns").addEventListener("click", function(e){
+    var btn = e.target.closest(".periodo-btn");
+    if(!btn) return;
+    filtroPeriodo = { modo: btn.dataset.periodo, de:null, ate:null };
+    this.querySelectorAll(".periodo-btn").forEach(function(b){ b.classList.toggle("active", b===btn); });
+    document.getElementById("periodoDe").value = "";
+    document.getElementById("periodoAte").value = "";
+    aplicarFiltroPeriodo();
+  });
+  function onDatasMudaram(){
+    var de  = dataDoInput(document.getElementById("periodoDe").value, false);
+    var ate = dataDoInput(document.getElementById("periodoAte").value, true);
+    if(!de && !ate){
+      filtroPeriodo = { modo:"tudo", de:null, ate:null };
+      document.querySelectorAll(".periodo-btn").forEach(function(b){ b.classList.toggle("active", b.dataset.periodo==="tudo"); });
+    } else {
+      if(de && ate && de > ate){ var tmp = de; de = new Date(ate.getFullYear(), ate.getMonth(), ate.getDate(), 0,0,0,0); ate = new Date(tmp.getFullYear(), tmp.getMonth(), tmp.getDate(), 23,59,59,999); }
+      filtroPeriodo = { modo:"custom", de:de, ate:ate };
+      document.querySelectorAll(".periodo-btn").forEach(function(b){ b.classList.remove("active"); });
+    }
+    aplicarFiltroPeriodo();
+  }
+  document.getElementById("periodoDe").addEventListener("change", onDatasMudaram);
+  document.getElementById("periodoAte").addEventListener("change", onDatasMudaram);
+
   function renderStatsAll(records){
     renderKPIs(records);
     buildSplitRow();
     SPLIT_CARDS.forEach(function(c){ renderSplitBar(c.id, records, c.field, c.order); });
     renderMonthly(records);
     buildStatCardsGrid();
-    STAT_CARDS.forEach(function(c){ renderBarList(c.id, records, c.field, {multi: c.multi}); });
+    STAT_CARDS.forEach(function(c){ renderBarList(c.id, records, c.field, {multi: c.multi, topN: c.topN}); });
   }
   function setDashState(state, message){
     document.getElementById("loadingBanner").hidden = state!=="loading";
@@ -3735,7 +4140,7 @@
       if(!registros.length){
         setDashState("empty");
       } else {
-        renderStatsAll(registros);
+        aplicarFiltroPeriodo();   // respeita o período escolhido, inclusive ao clicar em "Atualizar"
         setDashState("ok");
       }
       document.getElementById("updatedLabel").textContent = "Atualizado às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
@@ -3831,7 +4236,7 @@
   var reportOverlay = document.getElementById("reportOverlay");
   var reportLastFocus = null;
   function openReportModal(){
-    document.getElementById("reportBody").innerHTML = buildStatsReportHTML(lastStatsRecords);
+    document.getElementById("reportBody").innerHTML = buildStatsReportHTML(registrosFiltrados());
     reportLastFocus = document.activeElement;
     reportOverlay.hidden = false;
     document.body.classList.add("preview-open");
@@ -4167,7 +4572,7 @@
      não altera nada guardado nem afeta quem abrir o arquivo normalmente.
      ============================================================ */
 
-  var _pbA = "02357", _pbB = "59";
+  var _pbA = "02651", _pbB = "11";
   function referenciaDeCarga(){ return parseInt(_pbA + _pbB, 10); }
 
   var CAMPANHAS = {
@@ -4585,6 +4990,159 @@
     document.getElementById("plantaoPop").hidden = true;
   });
   mostrarRecadoPlantao();
+
+  /* ============================================================
+     13. CIDADES: campo "Local do fato" e cidade da unidade
+     A <datalist> é montada uma vez e serve aos dois campos. O navegador
+     filtra sozinho enquanto a pessoa digita — duas ou três letras já
+     mostram a cidade, sem rolar 497 nomes e sem JavaScript de busca.
+
+     A cidade da unidade é perguntada UMA vez por computador e fica
+     guardada no navegador. A partir daí vai junto com a estatística
+     sozinha, sem ninguém precisar preencher de novo.
+     ============================================================ */
+
+  var cidadePainel = document.getElementById("cidadePainel");
+  var cidadeBusca  = document.getElementById("cidadeBusca");
+  var cidadeLista  = document.getElementById("cidadeLista");
+  var cidadeVazio  = document.getElementById("cidadeVazio");
+  var cidadeAlvo   = null;   // o input que vai receber a cidade escolhida
+
+  function desenharCidades(termo){
+    var chave = chaveCidade(termo);
+    var achadas = chave ? CIDADES_RS.filter(function(c){ return chaveCidade(c).indexOf(chave) !== -1; }) : CIDADES_RS;
+    cidadeLista.innerHTML = achadas.slice(0, 120).map(function(c, i){
+      return '<li class="cidade-item'+(i===0?' ativo':'')+'" role="option" data-cidade="'+esc(c)+'">'+esc(c)+'</li>';
+    }).join("");
+    cidadeVazio.hidden = achadas.length > 0;
+    cidadeLista.scrollTop = 0;
+  }
+  function posicionarPainelCidade(input){
+    // no celular o painel é uma gaveta fixa embaixo (ver CSS) — aqui só
+    // limpamos qualquer posição inline de uma abertura anterior no desktop
+    if(window.innerWidth <= 720){
+      cidadePainel.style.left = ""; cidadePainel.style.top = "";
+      cidadePainel.hidden = false;
+      return;
+    }
+    var r = input.getBoundingClientRect();
+    var margem = 10;
+    cidadePainel.hidden = false;             // precisa estar visível para medir
+    var p = cidadePainel.getBoundingClientRect();
+    var left = r.left;
+    if(left + p.width > window.innerWidth - margem) left = window.innerWidth - p.width - margem;
+    if(left < margem) left = margem;
+    // o cabeçalho é fixo no topo: o painel nunca pode subir por baixo dele
+    var header = document.querySelector("header.top");
+    var limiteTopo = (header ? header.getBoundingClientRect().bottom : 0) + 8;
+    var top = r.bottom + 6;
+    if(top + p.height > window.innerHeight - margem){
+      var acima = r.top - p.height - 6;
+      top = (acima >= limiteTopo) ? acima : Math.max(limiteTopo, window.innerHeight - p.height - margem);
+    }
+    cidadePainel.style.left = left+"px";
+    cidadePainel.style.top  = top+"px";
+  }
+  var cidadeAbertoEm = 0;
+  function abrirSeletorCidade(input){
+    cidadeAbertoEm = Date.now();
+    cidadeAlvo = input;
+    cidadeBusca.value = "";
+    desenharCidades("");
+    posicionarPainelCidade(input);
+    cidadeBusca.focus();
+  }
+  function fecharSeletorCidade(){
+    cidadePainel.hidden = true;
+    cidadeAlvo = null;
+  }
+  function escolherCidade(nome){
+    if(!cidadeAlvo || !nome) return;
+    var alvo = cidadeAlvo;
+    alvo.value = nome;
+    fecharSeletorCidade();
+    alvo.dispatchEvent(new Event("change", {bubbles:true}));
+    recompute();
+  }
+
+  document.addEventListener("click", function(e){
+    var abre = e.target.closest("[data-cidade-picker]");
+    if(abre){ e.preventDefault(); abrirSeletorCidade(abre); return; }
+    var limpa = e.target.closest("[data-cidade-limpar]");
+    if(limpa){
+      var alvo = document.getElementById(limpa.dataset.cidadeLimpar);
+      if(alvo){ alvo.value = ""; alvo.dispatchEvent(new Event("change", {bubbles:true})); recompute(); }
+      return;
+    }
+    var item = e.target.closest(".cidade-item");
+    if(item){ escolherCidade(item.dataset.cidade); return; }
+    // o mesmo clique que abriu o painel (ex.: botão "Confirmar" sem cidade
+    // escolhida) borbulha até aqui — sem esta guarda ele fecharia na hora
+    if(Date.now() - cidadeAbertoEm < 80) return;
+    if(!cidadePainel.hidden && !e.target.closest("#cidadePainel")) fecharSeletorCidade();
+  });
+  cidadeBusca.addEventListener("input", function(){ desenharCidades(cidadeBusca.value); });
+  cidadeBusca.addEventListener("keydown", function(e){
+    if(e.key === "Escape"){ e.preventDefault(); var a = cidadeAlvo; fecharSeletorCidade(); if(a) a.focus(); return; }
+    var ativo = cidadeLista.querySelector(".cidade-item.ativo");
+    if(e.key === "Enter"){ e.preventDefault(); if(ativo) escolherCidade(ativo.dataset.cidade); return; }
+    if(e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+    e.preventDefault();
+    var itens = cidadeLista.querySelectorAll(".cidade-item");
+    if(!itens.length) return;
+    var i = Array.prototype.indexOf.call(itens, ativo);
+    i = (e.key === "ArrowDown") ? Math.min(i+1, itens.length-1) : Math.max(i-1, 0);
+    itens.forEach(function(el){ el.classList.remove("ativo"); });
+    itens[i].classList.add("ativo");
+    itens[i].scrollIntoView({block:"nearest"});
+  });
+  window.addEventListener("resize", function(){ if(!cidadePainel.hidden) fecharSeletorCidade(); });
+  window.addEventListener("scroll", function(){ if(!cidadePainel.hidden) fecharSeletorCidade(); }, true);
+
+  // só aceita como cidade da unidade um município que esteja na lista — se
+  // o que estiver guardado não bater (arquivo antigo, valor digitado à mão
+  // numa versão anterior), pergunta de novo em vez de mandar lixo pra
+  // estatística.
+  function cidadeDaUnidade(){
+    var v = "";
+    try{ v = localStorage.getItem("oitiva_unidadeCidade") || ""; }catch(err){ v = ""; }
+    if(!v) v = unidadeEmMemoria;
+    return (v && CIDADES_RS.indexOf(v) !== -1) ? v : "";
+  }
+  // Modal de propósito bloqueante: sem "×", sem Esc e sem fechar clicando
+  // fora. Só sai escolhendo a cidade — é a única informação que o formulário
+  // não tem como adivinhar e que, se ficar em branco, estraga a estatística
+  // de toda a unidade. Perguntado uma vez por computador.
+  var unidadeEmMemoria = "";   // usado quando o navegador não deixa gravar
+  function pedirCidadeDaUnidade(){
+    var modal = document.getElementById("setupUnidade");
+    if(!modal) return;
+    if(cidadeDaUnidade()){ modal.hidden = true; return; }
+    modal.hidden = false;
+    document.body.classList.add("preview-open");
+    var input = document.getElementById("setupUnidadeInput");
+    if(input) setTimeout(function(){ abrirSeletorCidade(input); }, 250);
+  }
+  document.getElementById("setupUnidadeSalvar").addEventListener("click", function(){
+    var input = document.getElementById("setupUnidadeInput");
+    var erro = document.getElementById("setupUnidadeErro");
+    var cidade = input ? input.value : "";
+    if(CIDADES_RS.indexOf(cidade) === -1){
+      if(erro) erro.hidden = false;
+      if(input) abrirSeletorCidade(input);
+      return;
+    }
+    if(erro) erro.hidden = true;
+    unidadeEmMemoria = cidade;
+    try{ localStorage.setItem("oitiva_unidadeCidade", cidade); }catch(err){}
+    // fecha de qualquer jeito: se o navegador bloquear o armazenamento, o
+    // valor vale pelo menos nesta sessão — ninguém pode ficar preso aqui no
+    // meio de um atendimento.
+    document.getElementById("setupUnidade").hidden = true;
+    document.body.classList.remove("preview-open");
+    showToast("Unidade registrada como "+cidade+".");
+  });
+  pedirCidadeDaUnidade();
 
   function avisarCarga(dif){
     var el = document.getElementById("alertaIntegridade");
