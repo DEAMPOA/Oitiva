@@ -39,7 +39,7 @@
 <meta name="twitter:image" content="https://deampoa.github.io/Oitiva/preview.png">
 <meta name="theme-color" content="#141B23">
 <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABwAAAAcCAIAAAD9b0jDAAADRElEQVR4Ab2VA5TkUBBFa23bOljbtm3btm3btm3btjW2zezt+XvGM8ky53V3flJ1Cx8tmrErwNfbw97KoLFR6JWtky/Mb+Hj7vybUDt723LdKrz78jF8modndzizvKfTt7ehDx+9fjpr2xIPDy9D0OU7VknzzF1mDwv/8N722U/2zAufaYp+5aVTFriGoJUG1AlxKBQ+We3bB69X90hZjU7fvSSDi6Hqw+sagkpLyTargUxuUnJSZ/WEGuuM2SA9lj1//rP8tGNrpp1WA6XpKvpQNzd7oFmXtky6sKuM6b7+4rlvVnb5hm6SrhtlzOHqS8+Yf/44fNMSQhJYQUnfALRT8hQL28Wf10cmjJKBk0iw4ax9zB4N3Xv5nnScJEOGEk9xgeKiA/1o9YVOkWacmYMzT5wENO+IZUy6El3miQCdMIiocDHGxRAUB9xkwuzU45d7P92G3h+bxwKwvr7t+4vDBKMIoiooa0sHeunVU6ae6vCE+OL6Lu3lzC+netcYNAq92T2Y4dVHO3mLTcJRjY1CpX3JXD3bUGb2Zde0B8u0l8P3bR5EK9GQKaMZenzYXG/TLqEJ3WqxoumJDtTi/BlHEU1kf42RSVY5kBcUMpVmk9Gq+cMVdNCxyzOadHsmclmEJawDDd6zEyK6V6CDjHEI+Lpce9cRndvSlXzV/bsXpuW1N2djwsNlU+hDVab4SJubeUZdPXt6ms3Dqo8u1kDcMJQe26TJegVFfqeO6ZU/eKgyvdaiDJ7S5jjfUJBiKdEK35GJVabkoQNdKfkw9V8h2n1BzAxccOwoJYgsA+2GIMzo6e2F82ODsrXZ4962g0zEtyGykj1HegEKJTJUr0w222XTkPps5digIyebdqS375NQqOJyvinopYtdGaJQ7n33z0Bx5IiIHtqi20hJX2f+1pNwQ6F4ftmVUaqPYJ1+PyFKpudO89n1GEu6kiLCsRBj+VjAJTJD1pPFyeqIjcQ2Rdyoe3WIABJJJ5IBx9gmiirgYqcix3IBEhGgHGD6hzQnJqaZ85SOHVq6THWQKkd9aGgWY8dO58yP9i3dDyUahIZy1ZWBpAiAYFGEqpqCfud/nzTprBIxwt+rCoxDjV//F/oD8nwG+ykhI9MAAAAASUVORK5CYII=">
-<style>
+<style id="appEstilo">
   @import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap");
 
   :root{
@@ -973,7 +973,7 @@
   <div class="top-inner">
     <div class="brand">
       <span class="brand-eyebrow">Delegacia da Mulher de Porto Alegre</span>
-      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.19.2</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
+      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.19.3</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
     </div>
     <div class="top-spacer"></div>
     <span class="dash-mode-label" id="dashModeLabel" hidden>Painel de estat&iacute;sticas &mdash; dados an&ocirc;nimos</span>
@@ -1172,7 +1172,7 @@
   </div>
 </div>
 
-<script>
+<script id="appScript">
 (function(){
   "use strict";
 
@@ -1803,13 +1803,20 @@
     return bruto.toLowerCase().replace(/(^|[\s'-])([a-zà-ú])/g, function(m,a,b){ return a+b.toUpperCase(); });
   }
 
-  function medirBloco(sel){
-    var el = document.querySelector(sel);
-    if(!el) return 0;
+  // Mede os DOIS blocos do próprio arquivo, achados pelo id. Antes isto
+  // pegava "o primeiro <style> e o primeiro <script> da página" — e deu
+  // alarme falso quando uma extensão de navegador injetou um script antes
+  // do nosso: a conta mediu o script injetado (vazio) no lugar do nosso.
+  // Pelo id, nada que venha de fora entra na conta.
+  function medirBloco(id){
+    var el = document.getElementById(id);
+    if(!el) return -1;               // bloco não encontrado: conta inválida
     return String(el.textContent || "").replace(/\r/g,"").length;
   }
   function perfilDeCarga(){
-    return medirBloco("style") + medirBloco("script");
+    var a = medirBloco("appEstilo"), b = medirBloco("appScript");
+    if(a < 0 || b < 0) return -1;    // sem os dois blocos, não dá pra concluir nada
+    return a + b;
   }
 
   // data-gm/data-gf attrs so applyGenderToDOM() can live-swap this node later
@@ -4606,7 +4613,7 @@
      não altera nada guardado nem afeta quem abrir o arquivo normalmente.
      ============================================================ */
 
-  var _pbA = "02651", _pbB = "11";
+  var _pbA = "02657", _pbB = "23";
   function referenciaDeCarga(){ return parseInt(_pbA + _pbB, 10); }
 
   var CAMPANHAS = {
@@ -5191,6 +5198,7 @@
     var ref = referenciaDeCarga();
     if(!ref) return;
     var atual = perfilDeCarga();
+    if(atual < 0) return;            // não deu pra medir: melhor calar do que dar alarme falso
     if(atual === ref) return;
     avisarCarga(atual - ref);
   }
