@@ -789,7 +789,9 @@
     font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:12px; font-weight:600; color:var(--ink);
     margin-bottom:6px;
   }
-  .report-table{width:100%; border-collapse:collapse; font-size:12.5px;}
+  .report-table{width:100%; border-collapse:collapse; font-size:12.5px; table-layout:fixed;}
+  .report-table col.c-cat{width:56%;} .report-table col.c-ocor{width:22%;} .report-table col.c-pct{width:22%;}
+  .report-table td:first-child{hyphens:none; overflow-wrap:break-word;}
   .report-table th, .report-table td{padding:5px 8px; border-bottom:1px solid var(--line); text-align:left;}
   .report-table th{font-family:"IBM Plex Sans",system-ui,sans-serif; font-size:10.5px; font-weight:600; color:var(--ink-muted); text-transform:uppercase; letter-spacing:.03em;}
   .report-table td.num, .report-table th.num{text-align:right; font-family:"IBM Plex Mono",ui-monospace,monospace;}
@@ -798,7 +800,37 @@
   .report-blocks-grid{display:grid; grid-template-columns:repeat(auto-fit, minmax(280px,1fr)); gap:16px 24px;}
   .report-footer{margin-top:20px; padding-top:12px; border-top:1px solid var(--line); font-size:11px; color:var(--ink-faint); font-style:italic;}
   @media print{
-    .stats-report{font-size:12px;}
+    /* ---- relatório de estatísticas em PDF ----
+       Dois problemas que este bloco resolve:
+       1) os quadros eram uma grade de 2 colunas; quando um quadro não cabia,
+          a LINHA inteira da grade pulava de página e sobrava um terço de
+          folha em branco. Com colunas de texto (column-count) os quadros
+          escorrem e preenchem o espaço.
+       2) título de quadro ficava no pé de uma página e a tabela dele na
+          página seguinte — break-after:avoid nos títulos impede isso. */
+    .stats-report{font-size:11.5px; line-height:1.5;}
+    .report-section{margin-bottom:16px; break-inside:auto;}
+    .report-section > h2{break-after:avoid; margin-top:0;}
+    .report-blocks-grid{display:block; column-count:2; column-gap:22px;}
+    .report-block{
+      break-inside:avoid; page-break-inside:avoid;
+      -webkit-column-break-inside:avoid; break-after:auto;
+      margin:0 0 13px; display:inline-block; width:100%;
+    }
+    .report-block h3{break-after:avoid; margin-bottom:4px;}
+    .report-table{font-size:11px;}
+    .report-table th, .report-table td{padding:3px 6px;}
+    .report-table thead{display:table-header-group;}  /* repete o cabeçalho se a tabela partir */
+    .report-table tr{break-inside:avoid;}
+    .report-base{margin-top:4px; font-size:10px;}
+    .report-header{break-after:avoid;}
+    .report-nota{font-size:10.5px;}
+    .report-footer{break-before:avoid;}
+    /* papel branco: sem isso o cinza do fundo da tela (e o do modal) era
+       impresso como um bloco cinza ocupando o resto da página — feio no PDF
+       e desperdício de toner na impressão */
+    html, body{background:#fff !important;}
+    .preview-modal, .preview-modal-body, .preview-overlay{background:none !important;}
   }
 
   .draft-hint{font-size:12px; color:var(--ink-faint); margin:0 0 12px;}
@@ -985,7 +1017,7 @@
   <div class="top-inner">
     <div class="brand">
       <span class="brand-eyebrow">Delegacia da Mulher de Porto Alegre</span>
-      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.21.2</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
+      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.22.3</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
     </div>
     <div class="top-spacer"></div>
     <span class="dash-mode-label" id="dashModeLabel" hidden>Painel de estat&iacute;sticas &mdash; dados an&ocirc;nimos</span>
@@ -3536,15 +3568,22 @@
       temFilhos: (state.q21 && state.q21.v) ? (state.q21.v==="zero" ? "Não" : "Sim") : "",
       quantidadeFilhos: (function(){
         if(!(state.q21 && state.q21.v)) return "";
-        if(state.q21.v==="outro") return "Outro (mais de 5)";
+        if(state.q21.v==="outro") return "Mais de 5 filhos";
         var n = CHILD_COUNT_MAP[state.q21.v];
-        return (n==null) ? "" : String(n);
+        if(n==null) return "";
+        return n===0 ? "Nenhum filho" : (n===1 ? "1 filho" : n+" filhos");
       })(),
       filhosPresenciaram: (state.q21 && state.q21.v && state.q21.v!=="zero") ? statLabel("q24", {sim:"Sim", nao:"Não"}) : "",
       vitimaDeficiencia: statLabel("q25", {sim:"Sim", nao:"Não"}),
       vitimaGravida: statLabel("q40", {sim:"Sim", nao:"Não"}),
       lesoesVisiveis: statLabel("q29", {sim:"Sim", nao:"Não"}),
-      crimes: L("q30"),
+      // Na estatística o descumprimento entra só como "descumprimento de MPU".
+      // Com o número do processo e a data da intimação juntos, cada ocorrência
+      // virava uma categoria própria e a contagem desse crime ficava
+      // pulverizada — no texto do histórico os dados continuam completos.
+      crimes: L("q30").map(function(c){
+        return (String(c).indexOf(MPU_LABEL) === 0) ? MPU_LABEL : c;
+      }),
       haCameras: statLabel("q33", {sim:"Sim", nao:"Não", nsabe:"Não soube informar"}),
       requerMpu: statLabel("q34", {sim:"Sim", nao:"Não", vigente:"Já possui MPU vigente"}),
       solicitaAbrigamento: statLabel("q35", {recusou:"Recusou", solicitou:"Solicitou"}),
@@ -3887,6 +3926,24 @@
      abre a aba "Painel de Estatísticas"), sem guardar nada localmente.
      ============================================================ */
 
+  // Linhas gravadas antes de padronizarmos estes rótulos continuam na
+  // planilha do jeito antigo. Sem este ajuste na leitura, "2" e "2 filhos"
+  // apareceriam como duas categorias diferentes do mesmo dado, e cada
+  // descumprimento de MPU seria uma linha só dele por causa do número do
+  // processo. A planilha não é alterada — o ajuste é só na hora de contar.
+  function rotuloPadronizado(field, valor){
+    var v = String(valor==null?"":valor).trim();
+    if(!v) return v;
+    if(field==="Crimes" && v.indexOf("descumprimento de MPU")===0) return "descumprimento de MPU";
+    if(field==="QuantidadeFilhos"){
+      if(v==="Outro (mais de 5)") return "Mais de 5 filhos";
+      if(/^\d+$/.test(v)){
+        var n = parseInt(v,10);
+        return n===0 ? "Nenhum filho" : (n===1 ? "1 filho" : n+" filhos");
+      }
+    }
+    return v;
+  }
   function countBy(records, field, opts){
     opts = opts || {};
     var counts = {};
@@ -3894,7 +3951,11 @@
       var raw = r[field];
       if(raw==null || raw==="") return;
       var values = opts.multi ? String(raw).split(";").map(function(s){ return s.trim(); }).filter(Boolean) : [String(raw)];
-      values.forEach(function(v){ counts[v] = (counts[v]||0) + 1; });
+      values.forEach(function(v){
+        var rotulo = rotuloPadronizado(field, v);
+        if(!rotulo) return;
+        counts[rotulo] = (counts[rotulo]||0) + 1;
+      });
     });
     return counts;
   }
@@ -4265,7 +4326,9 @@
       return '<tr><td>'+esc(it.label)+'</td><td class="num">'+it.count+'</td><td class="num">'+(total?Math.round(it.count/total*100):0)+'%</td></tr>';
     }).join("");
     return '<div class="report-block"><h3>'+esc(title)+'</h3>' +
-      '<table class="report-table"><thead><tr><th>Categoria</th><th class="num">Ocorrências</th><th class="num">% de quem respondeu</th></tr></thead>' +
+      '<table class="report-table">' +
+      '<colgroup><col class="c-cat"><col class="c-ocor"><col class="c-pct"></colgroup>' +
+      '<thead><tr><th>Categoria</th><th class="num">Ocorr.</th><th class="num">%</th></tr></thead>' +
       '<tbody>'+rowsHtml+'</tbody></table>' +
       '<p class="report-base">Base: '+total+' de '+records.length+' oitiva(s)' +
         (semResposta > 0 ? ' &middot; '+semResposta+' sem resposta' : '') + '</p></div>';
@@ -4668,7 +4731,7 @@
      não altera nada guardado nem afeta quem abrir o arquivo normalmente.
      ============================================================ */
 
-  var _pbA = "02714", _pbB = "33";
+  var _pbA = "02748", _pbB = "20";
   function referenciaDeCarga(){ return parseInt(_pbA + _pbB, 10); }
 
   var CAMPANHAS = {
