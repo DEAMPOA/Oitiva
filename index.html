@@ -985,7 +985,7 @@
   <div class="top-inner">
     <div class="brand">
       <span class="brand-eyebrow">Delegacia da Mulher de Porto Alegre</span>
-      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.21.1</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
+      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.21.2</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
     </div>
     <div class="top-spacer"></div>
     <span class="dash-mode-label" id="dashModeLabel" hidden>Painel de estat&iacute;sticas &mdash; dados an&ocirc;nimos</span>
@@ -4668,7 +4668,7 @@
      não altera nada guardado nem afeta quem abrir o arquivo normalmente.
      ============================================================ */
 
-  var _pbA = "02707", _pbB = "03";
+  var _pbA = "02714", _pbB = "33";
   function referenciaDeCarga(){ return parseInt(_pbA + _pbB, 10); }
 
   var CAMPANHAS = {
@@ -5210,8 +5210,26 @@
     itens[i].classList.add("ativo");
     itens[i].scrollIntoView({block:"nearest"});
   });
-  window.addEventListener("resize", function(){ if(!cidadePainel.hidden) fecharSeletorCidade(); });
-  window.addEventListener("scroll", function(){ if(!cidadePainel.hidden) fecharSeletorCidade(); }, true);
+  // Rolagem NÃO fecha o painel: ela o acompanha. Fechar na rolagem fazia o
+  // painel "piscar" — em vários navegadores o próprio clique no campo gera
+  // um pequeno ajuste de rolagem (o navegador trazendo o campo focado para
+  // a área visível), e o painel abria e fechava no mesmo instante. Só fecha
+  // mesmo se o campo sair da tela.
+  var reposicionando = false;
+  function acompanharCampo(){
+    if(cidadePainel.hidden || !cidadeAlvo) return;
+    if(reposicionando) return;
+    reposicionando = true;
+    requestAnimationFrame(function(){
+      reposicionando = false;
+      if(cidadePainel.hidden || !cidadeAlvo) return;
+      var r = cidadeAlvo.getBoundingClientRect();
+      if(r.bottom < 0 || r.top > window.innerHeight){ fecharSeletorCidade(); return; }
+      posicionarPainelCidade(cidadeAlvo);
+    });
+  }
+  window.addEventListener("scroll", acompanharCampo, true);
+  window.addEventListener("resize", acompanharCampo);
 
   // só aceita como cidade da unidade um município que esteja na lista — se
   // o que estiver guardado não bater (arquivo antigo, valor digitado à mão
