@@ -66,6 +66,111 @@
     /* paleta categórica do painel de estatísticas — só 2 tons novos além do accent/cinza já existentes */
     --stat-cat-2:#B8791F; --stat-cat-3:#4C6FA0;
   }
+  /* ============================================================
+     MODO CAMPANHA (Outubro Rosa / Agosto Lilás)
+     Troca a cor de destaque do sistema inteiro durante o mês. A troca é
+     COMPLETA de propósito: barra de progresso, opção marcada, botão ativo e
+     botões principais mudam todos juntos. Meio-termo seria pior — se só a
+     barra virasse rosa, quem usa todo dia ficaria em dúvida sobre o que
+     aquela cor significa. Trocando tudo, a leitura continua a mesma: a cor
+     de destaque é "ativo/preenchido", só que rosa neste mês.
+
+     O que NÃO muda, de propósito: o vermelho de "Limpar tudo" e o vermelho
+     do asterisco de campo obrigatório. São sinais de risco e de pendência —
+     campanha nenhuma justifica mexer neles.
+     ============================================================ */
+  body[data-campanha="rosa"]{
+    --accent:#B01E5F; --accent-strong:#8E1249; --accent-soft:#FBE4EF; --accent-ink:#FFFFFF;
+    --bg:#FAF1F5; --focus:#B01E5F;
+    --badge-simples-bg:#FBE4EF; --badge-simples-ink:#8E1249;
+    --header-accent:#F2699F; --header-accent-ink:#2B0A1A;
+    --header-badge-simples-bg:#3A1A28; --header-badge-simples-ink:#F7B3CE;
+    --camp-1:#D14C86; --camp-2:#8E1249; --camp-ink:#FFFFFF; --camp-suave:#FBE4EF;
+  }
+  body[data-campanha="lilas"]{
+    --accent:#6D28A8; --accent-strong:#551F84; --accent-soft:#F1E8FB; --accent-ink:#FFFFFF;
+    --bg:#F7F2FB; --focus:#6D28A8;
+    --badge-simples-bg:#F1E8FB; --badge-simples-ink:#551F84;
+    --header-accent:#C08BE8; --header-accent-ink:#22103A;
+    --header-badge-simples-bg:#2B2136; --header-badge-simples-ink:#E3C9F7;
+    --camp-1:#8E5AC4; --camp-2:#551F84; --camp-ink:#FFFFFF; --camp-suave:#F1E8FB;
+  }
+  @media (prefers-color-scheme: dark){
+    body[data-campanha="rosa"]:not([data-theme="light"]){
+      --accent:#F07AAA; --accent-strong:#F79CC2; --accent-soft:#3A1A28; --accent-ink:#26070F;
+      --bg:#150F12; --focus:#F79CC2;
+      --badge-simples-bg:#3A1A28; --badge-simples-ink:#F7B3CE;
+      --camp-1:#C2477E; --camp-2:#6E0F3C; --camp-suave:#3A1A28;
+    }
+    body[data-campanha="lilas"]:not([data-theme="light"]){
+      --accent:#C08BE8; --accent-strong:#D5AEF5; --accent-soft:#2B2136; --accent-ink:#1B0E2A;
+      --bg:#13101A; --focus:#D5AEF5;
+      --badge-simples-bg:#2B2136; --badge-simples-ink:#E3C9F7;
+      --camp-1:#7B4BAE; --camp-2:#3E1668; --camp-suave:#2B2136;
+    }
+  }
+  body[data-theme="dark"][data-campanha="rosa"]{
+    --accent:#F07AAA; --accent-strong:#F79CC2; --accent-soft:#3A1A28; --accent-ink:#26070F;
+    --bg:#150F12; --focus:#F79CC2;
+    --badge-simples-bg:#3A1A28; --badge-simples-ink:#F7B3CE;
+    --camp-1:#C2477E; --camp-2:#6E0F3C; --camp-suave:#3A1A28;
+  }
+  body[data-theme="dark"][data-campanha="lilas"]{
+    --accent:#C08BE8; --accent-strong:#D5AEF5; --accent-soft:#2B2136; --accent-ink:#1B0E2A;
+    --bg:#13101A; --focus:#D5AEF5;
+    --badge-simples-bg:#2B2136; --badge-simples-ink:#E3C9F7;
+    --camp-1:#7B4BAE; --camp-2:#3E1668; --camp-suave:#2B2136;
+  }
+
+  /* ---------- faixa ilustrada da campanha ---------- */
+  .campanha-hero{
+    position:relative; overflow:hidden;
+    background:linear-gradient(115deg, var(--camp-2) 0%, var(--camp-1) 58%, var(--camp-1) 100%);
+    color:var(--camp-ink, #fff);
+    padding:18px 24px; border-bottom:1px solid rgba(0,0,0,.18);
+  }
+  .campanha-hero[hidden]{display:none;}
+  .campanha-hero-inner{
+    max-width:1560px; margin:0 auto; position:relative; z-index:1;
+    display:flex; align-items:center; gap:20px;
+  }
+  .campanha-arte{flex:0 0 auto; width:104px; height:78px; opacity:.97;}
+  .campanha-texto{flex:1 1 auto; min-width:0;}
+  .campanha-titulo{
+    font-size:19px; font-weight:700; letter-spacing:-.01em; line-height:1.15; margin-bottom:4px;
+    display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+  }
+  .campanha-lei{
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:9.5px; font-weight:600;
+    letter-spacing:.09em; text-transform:uppercase; white-space:nowrap;
+    background:rgba(255,255,255,.17); border:1px solid rgba(255,255,255,.28);
+    border-radius:999px; padding:3px 9px;
+  }
+  .campanha-msg{font-size:14.5px; line-height:1.45; color:rgba(255,255,255,.95); max-width:860px;}
+  .campanha-msg strong{color:#fff; font-weight:600;}
+  .campanha-x{
+    position:absolute; top:10px; right:14px; z-index:2;
+    width:26px; height:26px; display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.14); border:none; border-radius:7px;
+    color:#fff; font-size:17px; line-height:1; cursor:pointer;
+  }
+  .campanha-x:hover{background:rgba(255,255,255,.28);}
+  /* bolhas decorativas de fundo */
+  .campanha-hero::before, .campanha-hero::after{
+    content:""; position:absolute; border-radius:50%; pointer-events:none;
+    background:radial-gradient(circle, rgba(255,255,255,.20) 0%, rgba(255,255,255,0) 70%);
+  }
+  .campanha-hero::before{width:380px; height:380px; right:-90px; top:-190px;}
+  .campanha-hero::after{width:260px; height:260px; left:38%; bottom:-190px;}
+  @media (max-width:720px){
+    .campanha-hero{padding:14px 14px 15px;}
+    .campanha-hero-inner{gap:13px; align-items:flex-start;}
+    .campanha-arte{width:62px; height:48px;}
+    .campanha-titulo{font-size:16px;}
+    .campanha-msg{font-size:13.5px;}
+    .campanha-x{top:7px; right:8px;}
+  }
+
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --bg:#10161A; --surface:#171F24; --surface-2:#1E2830; --paper:#181D20;
@@ -1017,7 +1122,7 @@
   <div class="top-inner">
     <div class="brand">
       <span class="brand-eyebrow">Delegacia da Mulher de Porto Alegre</span>
-      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.22.3</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
+      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.26.0</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
     </div>
     <div class="top-spacer"></div>
     <span class="dash-mode-label" id="dashModeLabel" hidden>Painel de estat&iacute;sticas &mdash; dados an&ocirc;nimos</span>
@@ -1071,6 +1176,17 @@
     <button type="button" class="view-tab" id="viewTabDashboard" data-view="dashboard">Painel de Estat&iacute;sticas</button>
     <button type="button" class="view-tab" id="viewTabNotes" data-view="notes">Bloco de Notas</button>
   </div>
+</div>
+
+<div class="campanha-hero" id="campanhaHero" hidden>
+  <div class="campanha-hero-inner">
+    <div class="campanha-arte" id="campanhaArte" aria-hidden="true"></div>
+    <div class="campanha-texto">
+      <div class="campanha-titulo"><span id="campanhaTitulo"></span><span class="campanha-lei" id="campanhaLei"></span></div>
+      <p class="campanha-msg" id="campanhaMsg"></p>
+    </div>
+  </div>
+  <button type="button" class="campanha-x" id="campanhaFechar" aria-label="Ocultar a faixa da campanha at&eacute; amanh&atilde;" title="Ocultar at&eacute; amanh&atilde;">&times;</button>
 </div>
 
 <main class="layout" id="formView">
@@ -1825,6 +1941,33 @@
     return String(str==null?"":str).replace(/[&<>"']/g, function(c){
       return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];
     });
+  }
+
+  // O servidor recusou esta cópia por estar desatualizada. Não adianta só
+  // avisar num canto: quem está com arquivo velho precisa parar e abrir o
+  // endereço certo, senão segue trabalhando num formulário que não registra
+  // mais nada.
+  var bloqueioMostrado = false;
+  function bloquearPorVersao(resp){
+    if(bloqueioMostrado) return;
+    bloqueioMostrado = true;
+    var link = (resp && resp.link) || "https://deampoa.github.io/Oitiva/";
+    var ov = document.createElement("div");
+    ov.className = "preview-overlay";
+    ov.innerHTML =
+      '<div class="preview-modal narrow" role="dialog" aria-modal="true">' +
+        '<div class="preview-modal-head"><h2>Esta cópia está desatualizada</h2></div>' +
+        '<div class="preview-modal-body">' +
+          '<p class="setup-unidade-texto">Você está usando um <strong>arquivo antigo</strong> do formulário, salvo no computador. ' +
+          'Ele não conversa mais com o sistema: rascunho, estatística e mensagens finais pararam de funcionar nesta cópia.</p>' +
+          '<p class="setup-unidade-texto">Abra o endereço abaixo, <strong>salve nos favoritos</strong> e apague o arquivo antigo. ' +
+          'A partir dele você sempre pega a versão mais nova, sem precisar baixar nada.</p>' +
+          '<p style="text-align:center;margin-top:4px"><a class="btn primary" style="text-decoration:none" href="'+esc(link)+'">Abrir o formulário atualizado</a></p>' +
+          '<p class="setup-unidade-texto" style="margin-top:14px;text-align:center;font-size:12px">'+esc(link)+'</p>' +
+        '</div>' +
+      '</div>';
+    document.body.appendChild(ov);
+    document.body.classList.add("preview-open");
   }
 
   /* ---- cidades: casar o que foi digitado com o nome oficial -------------
@@ -3483,6 +3626,40 @@
 
   var AI_BACKEND_URL = "https://script.google.com/macros/s/AKfycbxMxlZaZxIHphNO7MJ7gwf0iz2n-BhZemZi0ASWcwsuquC2u9cbGOdgrrx3Gp46F7nu/exec";
 
+  /* ---- conversa com o Apps Script --------------------------------------
+     Sempre passar por aqui em vez de chamar r.json() direto. Quando a
+     implantação do Apps Script sai do ar (endereço trocado, implantação
+     removida, cota estourada), o Google devolve uma PÁGINA HTML de erro no
+     lugar dos dados. O r.json() então falha com uma mensagem que não diz
+     nada — no Safari sai "The string did not match the expected pattern",
+     no Chrome "Unexpected token '<'". Aqui a resposta é lida como texto,
+     e se não for JSON o erro já explica o que provavelmente aconteceu e
+     registra no console o começo do que veio. */
+  // A versão vai junto em toda conversa com o servidor. É lida da própria
+  // etiqueta do cabeçalho para nunca desencontrar do número mostrado na tela.
+  var VERSAO_APP = (function(){
+    var el = document.getElementById("versionTag");
+    var m = el ? String(el.textContent).match(/(\d+)\.(\d+)\.(\d+)/) : null;
+    return m ? m[0] : "0.0.0";
+  })();
+
+  async function postarNoBackend(payload){
+    payload.versao = VERSAO_APP;
+    var r = await fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify(payload) });
+    var texto = await r.text();
+    try{
+      var resp = JSON.parse(texto);
+      if(resp && resp.desatualizado){ bloquearPorVersao(resp); }
+      return resp;
+    }catch(err){
+      console.error("[oitiva] resposta que não é JSON — HTTP "+r.status+":", texto.slice(0,500));
+      var pagina = /^\s*</.test(texto) || /<html/i.test(texto);
+      throw new Error(pagina
+        ? "o endereço do Apps Script respondeu uma página do Google em vez dos dados (HTTP "+r.status+"). Isso costuma significar que a implantação foi trocada ou removida — confira no Apps Script, em Implantar › Gerenciar implantações, se o endereço ainda é o mesmo que está no formulário."
+        : "o servidor respondeu algo inesperado (HTTP "+r.status+")." );
+    }
+  }
+
   async function runAiRewrite(fieldId, btn){
     var url = AI_BACKEND_URL;
     var textarea = document.getElementById(fieldId);
@@ -3495,8 +3672,7 @@
     btn.disabled = true;
     btn.textContent = "Reescrevendo…";
     try{
-      var r = await fetch(url, { method:"POST", body: JSON.stringify({action:"aiRedigirDepoimento", texto: texto}) });
-      var j = await r.json();
+      var j = await postarNoBackend({action:"aiRedigirDepoimento", texto: texto});
       if(j && j.ok === false) throw new Error(j.erro || "Erro no servidor de IA.");
       var sugestao = j && j.textoRevisado;
       if(!sugestao) throw new Error("A IA não retornou nenhum texto.");
@@ -3632,7 +3808,7 @@
     if(missingRequiredFields().length>0) return;
     estatisticaJaRegistrada = true;
     try{
-      var blob = new Blob([JSON.stringify({action:"registrarEstatistica", dados: collectStatsPayload()})], {type:"text/plain"});
+      var blob = new Blob([JSON.stringify({action:"registrarEstatistica", versao: VERSAO_APP, dados: collectStatsPayload()})], {type:"text/plain"});
       navigator.sendBeacon(AI_BACKEND_URL, blob);
     }catch(err){}
   }
@@ -3778,11 +3954,7 @@
     var old = btn.textContent;
     btn.disabled = true; btn.textContent = "Salvando…";
     try{
-      var r = await fetch(AI_BACKEND_URL, {
-        method:"POST",
-        body: JSON.stringify({action:"salvarRascunho", nomeVitima: nome, dadosJson: JSON.stringify(payload)})
-      });
-      var j = await r.json();
+      var j = await postarNoBackend({action:"salvarRascunho", nomeVitima: nome, dadosJson: JSON.stringify(payload)});
       if(!j || j.ok===false) throw new Error((j && j.erro) || "Falha ao salvar rascunho.");
       currentDraftId = j.id;
       showToast('Rascunho salvo' + (nome ? ' ("'+nome+'")' : "") + ' — some sozinho em 24h.');
@@ -3842,8 +4014,7 @@
     }
     draftsSyncPromise = (async function(){
       try{
-        var r = await fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"listarRascunhos"}) });
-        var j = await r.json();
+        var j = await postarNoBackend({action:"listarRascunhos"});
         if(j && j.ok!==false){
           draftsCache = j.rascunhos || [];
           // se o modal estiver aberto no momento em que a sincronização chega,
@@ -3905,8 +4076,7 @@
     if(!item) return;
     item.disabled = true;
     try{
-      var r = await fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"carregarRascunho", id:item.dataset.draftId}) });
-      var j = await r.json();
+      var j = await postarNoBackend({action:"carregarRascunho", id:item.dataset.draftId});
       if(!j || j.ok===false) throw new Error((j && j.erro) || "Rascunho não encontrado (pode ter expirado).");
       var data = JSON.parse(j.dadosJson);
       restoreFormState(data);
@@ -4284,8 +4454,7 @@
     btn.disabled = true;
     setDashState("loading");
     try{
-      var r = await fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"getEstatisticas"}) });
-      var j = await r.json();
+      var j = await postarNoBackend({action:"getEstatisticas"});
       if(!j || j.ok===false) throw new Error((j && j.erro) || "Falha ao buscar estatísticas.");
       var registros = j.registros || [];
       lastStatsRecords = registros;
@@ -4556,8 +4725,7 @@
   // funcionando normalmente com o que já estava no cache local.
   function sincronizarMensagensFinais(){
     try{
-      fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"listarMensagensFinais", cidade: cidadeDaUnidade()}) })
-        .then(function(r){ return r.json(); })
+      postarNoBackend({action:"listarMensagensFinais", cidade: cidadeDaUnidade()})
         .then(function(j){
           if(!j || j.ok===false) return;
           var novas = j.mensagens || [];
@@ -4597,8 +4765,7 @@
       var texto = input ? input.value.trim() : "";
       if(!texto){ showToast("Digite o texto da mensagem antes de adicionar."); return; }
       addBtn.disabled = true;
-      fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"adicionarMensagemFinal", texto: texto, cidade: cidadeDaUnidade()}) })
-        .then(function(r){ return r.json(); })
+      postarNoBackend({action:"adicionarMensagemFinal", texto: texto, cidade: cidadeDaUnidade()})
         .then(function(j){
           addBtn.disabled = false;
           if(!j || j.ok===false){
@@ -4624,8 +4791,7 @@
       var msg = mensagensFinaisCustom.find(function(m){ return m.id===id; });
       if(!confirm('Remover esta mensagem da lista da sua unidade?\n\n"'+(msg?msg.texto:"")+'"')) return;
       removeBtn.disabled = true;
-      fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"removerMensagemFinal", id:id, cidade: cidadeDaUnidade()}) })
-        .then(function(r){ return r.json(); })
+      postarNoBackend({action:"removerMensagemFinal", id:id, cidade: cidadeDaUnidade()})
         .then(function(j){
           if(!j || j.ok===false){
             console.error("[oitiva] removerMensagemFinal falhou:", j);
@@ -4731,15 +4897,86 @@
      não altera nada guardado nem afeta quem abrir o arquivo normalmente.
      ============================================================ */
 
-  var _pbA = "02748", _pbB = "20";
+  var _pbA = "02896", _pbB = "85";
   function referenciaDeCarga(){ return parseInt(_pbA + _pbB, 10); }
 
   var CAMPANHAS = {
     8: { classe:"lilas", texto:"Agosto Lilás",
-         titulo:"Agosto Lilás — mês nacional de conscientização e enfrentamento da violência contra a mulher (Lei 14.448/2022). O mês foi escolhido por causa da sanção da Lei Maria da Penha, em 7 de agosto de 2006." },
+         titulo:"Agosto Lilás — mês nacional de conscientização e enfrentamento da violência contra a mulher (Lei 14.448/2022). O mês foi escolhido por causa da sanção da Lei Maria da Penha, em 7 de agosto de 2006.",
+         heroTitulo:"Agosto Lilás",
+         heroLei:"Lei 14.448/2022",
+         heroMsgs:[
+           "Ligue <strong>180</strong>. De graça, 24 horas, e sem precisar dizer quem é.",
+           "Agosto é o mês da Lei Maria da Penha — sancionada em 7 de agosto de 2006.",
+           "Medida protetiva não depende de representar criminalmente. São coisas separadas.",
+           "Quem volta pela terceira vez não está exagerando.",
+           "Separação recente é o momento de maior risco. Pergunte a data.",
+           "Arma de fogo em casa muda o caso inteiro. Sempre pergunte.",
+           "A criança que assistiu também é vítima. Está na lei.",
+           "Violência vicária: atingir os filhos para ferir a mãe. Agora tem nome e tem crime.",
+           "Você é a primeira pessoa que ela encontra depois. Isso pesa.",
+           "Vinte anos de Lei Maria da Penha. A fila continua.",
+           "Ela não precisa provar nada para você. Precisa ser ouvida.",
+           "O que você registra hoje é o que o juiz vai ler depois."
+         ],
+         corA:"#E6CCFA", corB:"#FFFFFF" },
     10:{ classe:"rosa", texto:"Outubro Rosa",
-         titulo:"Outubro Rosa — mês de conscientização sobre o câncer de mama. A mamografia é oferecida gratuitamente pelo SUS." }
+         titulo:"Outubro Rosa — mês de conscientização sobre o câncer de mama. A mamografia detecta o tumor antes de qualquer sintoma: dos 50 aos 74 anos, a cada dois anos; dos 40 aos 49, conforme avaliação médica.",
+         heroTitulo:"Outubro Rosa",
+         heroLei:"Detecção precoce do câncer de mama",
+         heroMsgs:[
+           "Quando o caroço aparece, o tumor já cresceu. A mamografia vê antes.",
+           "Quem passa o dia cuidando dos outros costuma adiar a própria consulta.",
+           "Dos 50 aos 74, o exame é a cada dois anos. Dos 40 aos 49, converse com seu médico.",
+           "Adiar o exame não adia o tumor.",
+           "O exame leva dez minutos. A remarcação leva dois anos.",
+           "Detectado cedo, o câncer de mama tem <strong>alta chance de cura</strong>.",
+           "Marcar a mamografia também é escala. Coloque na sua.",
+           "Mamografia não previne. Detecta — e detectar cedo muda o desfecho.",
+           "O autoexame ajuda a conhecer o próprio corpo, mas não substitui a mamografia.",
+           "Caso na família muda a idade de começar. Pergunte ao seu médico.",
+           "Quando foi a sua última mamografia? Se você precisou pensar, já passou da hora.",
+           "Homem também tem câncer de mama. Raro, mas tem.",
+           "A fila da recepção não acaba. A sua consulta acaba — se você marcar.",
+           "Cuidar de quem cuida também é trabalho da delegacia."
+         ],
+         corA:"#FFD9E8", corB:"#FFFFFF" }
   };
+
+  // Ilustração da faixa — desenhada em SVG, não é arquivo de imagem: não
+  // depende de upload, funciona sem internet, fica nítida em qualquer tela
+  // e continua cabendo no arquivo único que você manda por link.
+  function arteDaCampanha(c){
+    return '<svg viewBox="0 0 120 100" width="100%" height="100%" aria-hidden="true">' +
+      '<defs>' +
+        '<linearGradient id="cgLaco" x1="0" y1="0" x2="0.6" y2="1">' +
+          '<stop offset="0%" stop-color="'+c.corB+'"/><stop offset="100%" stop-color="'+c.corA+'"/>' +
+        '</linearGradient>' +
+      '</defs>' +
+      '<circle cx="22"  cy="28" r="15" fill="'+c.corB+'" opacity=".13"/>' +
+      '<circle cx="98"  cy="70" r="17" fill="'+c.corB+'" opacity=".11"/>' +
+      '<circle cx="101" cy="22" r="5"  fill="'+c.corB+'" opacity=".26"/>' +
+      '<circle cx="17"  cy="72" r="4"  fill="'+c.corB+'" opacity=".30"/>' +
+      '<circle cx="110" cy="46" r="2.6" fill="'+c.corB+'" opacity=".38"/>' +
+      '<circle cx="9"   cy="47" r="2.2" fill="'+c.corB+'" opacity=".30"/>' +
+      '<g transform="translate(12 -4) scale(4)" fill="none" stroke="url(#cgLaco)" ' +
+         'stroke-width="2" stroke-linecap="round">' +
+        '<path d="M9 22 C9.8 18.5 11.5 16.2 13.6 13.2 C15.4 10.7 16 9.2 16 7.9 C16 6.2 14.2 5 12 5"/>' +
+        '<path d="M15 22 C14.2 18.5 12.5 16.2 10.4 13.2 C8.6 10.7 8 9.2 8 7.9 C8 6.2 9.8 5 12 5"/>' +
+      '</g></svg>';
+  }
+  // favicon temático: mesmo laço, agora na aba do navegador
+  function faviconDaCampanha(c){
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">' +
+      '<rect width="24" height="24" rx="5" fill="#141B23"/>' +
+      '<g fill="none" stroke="'+c.corA+'" stroke-width="2.2" stroke-linecap="round" ' +
+         'transform="translate(1.2 0.6) scale(0.9)">' +
+        '<path d="M9 22 C9.8 18.5 11.5 16.2 13.6 13.2 C15.4 10.7 16 9.2 16 7.9 C16 6.2 14.2 5 12 5"/>' +
+        '<path d="M15 22 C14.2 18.5 12.5 16.2 10.4 13.2 C8.6 10.7 8 9.2 8 7.9 C8 6.2 9.8 5 12 5"/>' +
+      '</g></svg>';
+    return "data:image/svg+xml," + encodeURIComponent(svg);
+  }
+
   var LACO_SVG = '<svg class="laco" viewBox="6.4 3.4 11.2 19.8" aria-hidden="true">' +
     '<path d="M9 22 C9.8 18.5 11.5 16.2 13.6 13.2 C15.4 10.7 16 9.2 16 7.9 C16 6.2 14.2 5 12 5"/>' +
     '<path d="M15 22 C14.2 18.5 12.5 16.2 10.4 13.2 C8.6 10.7 8 9.2 8 7.9 C8 6.2 9.8 5 12 5"/></svg>';
@@ -4758,12 +4995,55 @@
     var el = document.getElementById("seloCampanha");
     if(!el) return;
     var c = CAMPANHAS[mesDaCampanha()];
-    if(!c){ el.hidden = true; el.innerHTML = ""; el.removeAttribute("title"); return; }
+    if(!c){
+      el.hidden = true; el.innerHTML = ""; el.removeAttribute("title");
+      document.body.removeAttribute("data-campanha");
+      var hero0 = document.getElementById("campanhaHero");
+      if(hero0) hero0.hidden = true;
+      return;
+    }
     el.className = "selo-campanha "+c.classe;
     el.innerHTML = LACO_SVG + "<span>"+esc(c.texto)+"</span>";
     el.title = c.titulo;
     el.hidden = false;
+    document.body.setAttribute("data-campanha", c.classe);   // troca a paleta do sistema
+    trocarFavicon(c);
+    montarFaixaCampanha(c);
   }
+  function trocarFavicon(c){
+    var link = document.querySelector('link[rel="icon"]');
+    if(link) link.href = faviconDaCampanha(c);
+  }
+  // a faixa pode ser escondida com o "×" — mas só até o dia seguinte. Quem
+  // usa o sistema todo dia não precisa ver o mesmo aviso a cada oitiva.
+  function chaveDoDia(){
+    var d = new Date();
+    return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();
+  }
+  function montarFaixaCampanha(c){
+    var hero = document.getElementById("campanhaHero");
+    if(!hero) return;
+    var oculta = "";
+    try{ oculta = localStorage.getItem("oitiva_campanhaOculta") || ""; }catch(err){}
+    document.getElementById("campanhaArte").innerHTML = arteDaCampanha(c);
+    document.getElementById("campanhaTitulo").textContent = c.heroTitulo;
+    document.getElementById("campanhaLei").textContent = c.heroLei;
+    // Uma frase por dia, em vez da mesma o mês inteiro: lida todo plantão, a
+    // mesma mensagem vira papel de parede e ninguém mais enxerga. O índice
+    // anda UM por dia (contador de dias, não sorteio) — assim a lista roda
+    // inteira antes de qualquer frase repetir. O deslocamento por máquina só
+    // evita que todas as delegacias mostrem a mesma frase no mesmo dia.
+    var diaAbsoluto = Math.floor(new Date().setHours(12,0,0,0) / 86400000);
+    var desloc = sorteioSimples(idDaMaquina(), c.heroMsgs.length);
+    var i = (diaAbsoluto + desloc) % c.heroMsgs.length;
+    document.getElementById("campanhaMsg").innerHTML = c.heroMsgs[i];  // texto nosso, fixo no código
+    hero.hidden = (oculta === chaveDoDia());
+  }
+  document.getElementById("campanhaFechar").addEventListener("click", function(){
+    document.getElementById("campanhaHero").hidden = true;
+    try{ localStorage.setItem("oitiva_campanhaOculta", chaveDoDia()); }catch(err){}
+    showToast("Faixa oculta até amanhã.");
+  });
   aplicarSeloCampanha();
 
   /* ============================================================
