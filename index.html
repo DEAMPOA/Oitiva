@@ -442,6 +442,8 @@
   .footer-note{text-align:center; font-size:11.5px; color:var(--ink-faint); margin-top:8px;}
   /* base de cálculo de cada gráfico — o número nunca aparece sem dizer
      sobre quantas oitivas ele foi calculado */
+  .estat-status{font-size:11.5px; color:var(--ink-faint); line-height:1.4;}
+  .estat-status.alerta{color:var(--danger); font-weight:600;}
   .bar-base{margin-top:9px; padding-top:8px; border-top:1px dashed var(--line-soft);
             font-size:11px; color:var(--ink-faint); line-height:1.4;}
   .bar-base.alerta{color:var(--danger);}
@@ -1122,7 +1124,7 @@
   <div class="top-inner">
     <div class="brand">
       <span class="brand-eyebrow">Delegacia da Mulher de Porto Alegre</span>
-      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.26.0</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
+      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.27.0</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
     </div>
     <div class="top-spacer"></div>
     <span class="dash-mode-label" id="dashModeLabel" hidden>Painel de estat&iacute;sticas &mdash; dados an&ocirc;nimos</span>
@@ -1211,6 +1213,8 @@
   <div id="dashContent" hidden>
     <div class="dash-toolbar">
       <span class="updated-label" id="updatedLabel"></span>
+      <span class="estat-status" id="estatStatus"></span>
+      <button class="btn small" id="estatReenviarBtn" type="button" hidden>Enviar agora</button>
       <button class="btn small" id="printReportBtn" type="button">Imprimir relat&oacute;rio</button>
       <button class="btn small" id="refreshStatsBtn" type="button">Atualizar</button>
     </div>
@@ -2292,7 +2296,7 @@
         scrollToField(missing[0], true);
         return;
       }
-      confirmarPendencias(function(){ copyToClipboard(currentDocText(docId), copyBtn); });
+      confirmarPendencias(function(){ registrarEstatisticaAgora(); copyToClipboard(currentDocText(docId), copyBtn); });
       return;
     }
     var previewBtn = e.target.closest("[data-preview]");
@@ -2303,7 +2307,7 @@
         scrollToField(missingPrev[0], true);
         return;
       }
-      confirmarPendencias(openPreviewModal);
+      confirmarPendencias(function(){ registrarEstatisticaAgora(); openPreviewModal(); });
     }
   });
 
@@ -3597,7 +3601,7 @@
     // tentarAutoRegistrarEstatistica) bem antes de chegar em "Limpar tudo" —
     // isso aqui é só uma rede de segurança pro caso raro de completar e
     // limpar tudo dentro da mesma janela de 1,5s.
-    if(completo && !estatisticaJaRegistrada) enviarEstatistica(collectStatsPayload());
+    if(completo && !estatisticaJaRegistrada){ estatisticaJaRegistrada = true; enviarEstatistica(collectStatsPayload()); }
     clearTimeout(estatisticaTimer);
     estatisticaJaRegistrada = false; // preparar pro próximo preenchimento
     pendJaConfirmadas = "";          // nova ocorrência: volta a avisar das pendências
@@ -3769,12 +3773,102 @@
       unidadeCidade: cidadeDaUnidade()
     };
   }
-  // melhor esforço — nunca deve travar o "Limpar tudo" se a rede falhar.
-  function enviarEstatistica(dados){
+  /* ---- envio da estatística, com fila de reenvio ------------------------
+     Antes isto era "atira e esquece": mandava pro servidor e ignorava a
+     resposta. Se o servidor recusasse — rede fora, implantação trocada,
+     cabeçalho da planilha mexido, versão barrada — a oitiva simplesmente
+     não entrava na contagem e NINGUÉM ficava sabendo, nem quem preencheu
+     nem quem cuida do sistema. Foi assim que dias inteiros de atendimento
+     sumiram das estatísticas sem deixar rastro.
+
+     Agora: confere a resposta; se falhar, guarda a estatística numa fila no
+     próprio navegador e tenta de novo na próxima vez que o formulário abrir.
+     O painel mostra quantas estão na fila e qual foi o último erro. */
+  var FILA_ESTAT_MAX = 60;
+  function lerFilaEstat(){
+    var f = null;
+    try{ f = JSON.parse(localStorage.getItem("oitiva_filaEstat") || "[]"); }catch(err){ f = null; }
+    return (f && f.length !== undefined) ? f : [];
+  }
+  function gravarFilaEstat(f){
+    try{ localStorage.setItem("oitiva_filaEstat", JSON.stringify(f.slice(-FILA_ESTAT_MAX))); }catch(err){}
+  }
+  function registrarErroEstat(msg){
+    try{ localStorage.setItem("oitiva_ultimoEstatErro", (msg||"")+" | "+new Date().toISOString()); }catch(err){}
+  }
+  function registrarSucessoEstat(){
     try{
-      fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"registrarEstatistica", dados: dados}) })
-        .catch(function(){});
+      localStorage.setItem("oitiva_ultimoEstatOk", new Date().toISOString());
+      localStorage.removeItem("oitiva_ultimoEstatErro");
     }catch(err){}
+  }
+
+  async function enviarEstatistica(dados, jaEstaNaFila){
+    try{
+      var j = await postarNoBackend({action:"registrarEstatistica", dados: dados});
+      if(j && j.ok !== false){
+        registrarSucessoEstat();
+        atualizarStatusEstat();
+        return true;
+      }
+      console.error("[oitiva] o servidor recusou a estatística:", j && j.erro);
+      registrarErroEstat((j && j.erro) || "recusada pelo servidor");
+    }catch(err){
+      console.error("[oitiva] falha ao enviar a estatística:", err && err.message);
+      registrarErroEstat((err && err.message) || "falha de conexão");
+    }
+    if(!jaEstaNaFila){
+      var fila = lerFilaEstat();
+      fila.push({em: Date.now(), dados: dados});
+      gravarFilaEstat(fila);
+    }
+    atualizarStatusEstat();
+    return false;
+  }
+
+  // Mostra, no painel, se o registro automático está de fato funcionando.
+  // Sem isto não havia como saber: o envio era silencioso dos dois lados.
+  function atualizarStatusEstat(){
+    var el = document.getElementById("estatStatus");
+    var btn = document.getElementById("estatReenviarBtn");
+    if(!el) return;
+    var fila = lerFilaEstat();
+    var ok = "", erro = "";
+    try{
+      ok = localStorage.getItem("oitiva_ultimoEstatOk") || "";
+      erro = localStorage.getItem("oitiva_ultimoEstatErro") || "";
+    }catch(err){}
+    if(fila.length){
+      el.className = "estat-status alerta";
+      el.textContent = fila.length + (fila.length===1 ? " oitiva aguardando envio" : " oitivas aguardando envio") +
+        (erro ? " — último erro: "+erro.split(" | ")[0] : "");
+      if(btn) btn.hidden = false;
+      return;
+    }
+    if(btn) btn.hidden = true;
+    el.className = "estat-status";
+    if(ok){
+      var d = new Date(ok);
+      el.textContent = "Registro automático ativo — última oitiva registrada em " +
+        d.toLocaleDateString("pt-BR") + " às " + d.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+    } else {
+      el.textContent = erro ? ("Nenhuma oitiva registrada ainda por este computador — último erro: "+erro.split(" | ")[0])
+                            : "Nenhuma oitiva registrada ainda por este computador.";
+    }
+  }
+
+  // roda ao abrir o formulário: o que não foi antes vai agora
+  async function reenviarFilaEstatisticas(){
+    var fila = lerFilaEstat();
+    if(!fila.length) return;
+    var restantes = [];
+    for(var i=0; i<fila.length; i++){
+      var ok = await enviarEstatistica(fila[i].dados, true);
+      if(!ok) restantes = restantes.concat(fila.slice(i));  // servidor fora: para por aqui
+      if(!ok) break;
+    }
+    gravarFilaEstat(restantes);
+    atualizarStatusEstat();
   }
 
   // ---- registro automático e silencioso da estatística ----
@@ -3802,6 +3896,17 @@
       estatisticaJaRegistrada = true;
       enviarEstatistica(collectStatsPayload());
     }, 1500);
+  }
+  // Copiar e Gerar PDF são a prova de que a oitiva foi concluída — e os dois
+  // só ficam liberados com as obrigatórias completas. Registrar neste momento
+  // cobre o caso de a pessoa terminar, copiar e fechar a aba antes de a
+  // espera de 1,5s do registro automático terminar.
+  function registrarEstatisticaAgora(){
+    if(estatisticaJaRegistrada) return;
+    if(missingRequiredFields().length>0) return;
+    clearTimeout(estatisticaTimer);
+    estatisticaJaRegistrada = true;
+    enviarEstatistica(collectStatsPayload());
   }
   function registrarEstatisticaViaBeacon(){
     if(estatisticaJaRegistrada) return;
@@ -4471,6 +4576,15 @@
     btn.disabled = false;
   }
   document.getElementById("refreshStatsBtn").addEventListener("click", loadStats);
+  document.getElementById("estatReenviarBtn").addEventListener("click", async function(){
+    this.disabled = true;
+    await reenviarFilaEstatisticas();
+    this.disabled = false;
+    var restam = lerFilaEstat().length;
+    showToast(restam ? ("Ainda restam "+restam+" na fila — veja o motivo ao lado.") : "Tudo enviado.");
+  });
+  reenviarFilaEstatisticas();   // ao abrir, tenta mandar o que ficou para trás
+  atualizarStatusEstat();
 
   /* ---------- relatório completo (impressão / apresentação) ---------- */
   function reportBreakdownTable(title, records, field, opts){
@@ -4897,7 +5011,7 @@
      não altera nada guardado nem afeta quem abrir o arquivo normalmente.
      ============================================================ */
 
-  var _pbA = "02896", _pbB = "85";
+  var _pbA = "02946", _pbB = "98";
   function referenciaDeCarga(){ return parseInt(_pbA + _pbB, 10); }
 
   var CAMPANHAS = {
