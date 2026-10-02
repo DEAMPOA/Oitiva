@@ -349,7 +349,10 @@
   }
   .view-switch-inner{
     max-width:1560px; margin:0 auto; display:flex; gap:4px;
+    overflow-x:auto; scrollbar-width:none; /* 4 abas no celular: rola só a barra, nunca a página */
   }
+  .view-switch-inner::-webkit-scrollbar{display:none;}
+  .view-tab{flex-shrink:0;}
   .view-tab{
     font-size:13px; font-weight:600; color:var(--ink-muted);
     background:transparent; border:none; padding:11px 4px; margin-right:22px;
@@ -959,6 +962,90 @@
     .preview-modal, .preview-modal-body, .preview-overlay{background:none !important;}
   }
 
+  /* ---------- backup automático: selo no cabeçalho ---------- */
+  .backup-chip{
+    display:inline-flex; align-items:center; gap:7px; white-space:nowrap;
+    font-size:11.5px; font-weight:600; padding:6px 10px; border-radius:6px;
+    background:transparent; border:1px solid var(--header-line); color:var(--header-ink-muted);
+  }
+  .backup-chip:hover{border-color:var(--header-accent); color:var(--header-ink);}
+  .backup-dot{width:8px; height:8px; border-radius:50%; background:var(--header-ink-muted); opacity:.6; flex-shrink:0;}
+  .backup-chip.ok .backup-dot{background:#3FB37F; opacity:1;}
+  .backup-chip.salvando .backup-dot{background:#E3B341; opacity:1; animation:backupPulso 1s ease-in-out infinite;}
+  .backup-chip.erro{border-color:#E08585; color:#F0A3A3;}
+  .backup-chip.erro .backup-dot{background:#E08585; opacity:1;}
+  @keyframes backupPulso{50%{opacity:.35;}}
+  @media (prefers-reduced-motion: reduce){ .backup-chip.salvando .backup-dot{animation:none;} }
+
+  /* ---------- tela "Ocorrências salvas" ---------- */
+  main.backup-layout{
+    max-width:1100px; margin:0 auto; padding:22px 24px 80px;
+    display:flex; flex-direction:column; align-items:stretch; gap:14px;
+  }
+  main.backup-layout[hidden]{display:none;}
+  .backup-titulo{font-size:18px; font-weight:600; margin:0 0 4px;}
+  .backup-hint{font-size:12.5px; color:var(--ink-muted); line-height:1.55; margin:0; max-width:760px;}
+  .backup-busca{
+    display:flex; align-items:flex-end; gap:12px; flex-wrap:wrap;
+    background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px; box-shadow:var(--shadow);
+  }
+  .backup-campo{display:flex; flex-direction:column; gap:5px; font-size:11.5px; font-weight:600; color:var(--ink-muted);}
+  .backup-campo.cresce{flex:1 1 260px;}
+  .backup-campo input{
+    font-family:inherit; font-size:14px; color:var(--ink); background:var(--paper);
+    border:1px solid var(--line); border-radius:7px; padding:8px 10px; min-height:38px;
+  }
+  .backup-campo input:focus{outline:2px solid var(--focus); outline-offset:1px;}
+  .backup-acoes{display:flex; gap:8px;}
+  .backup-acoes .btn{min-height:38px;}
+  .backup-resumo{font-size:12.5px; color:var(--ink-muted); margin:0;}
+  .backup-lista{display:flex; flex-direction:column; gap:8px;}
+  .oc-item{
+    display:grid; grid-template-columns:96px 1fr auto; align-items:center; gap:14px;
+    width:100%; text-align:left; font-family:inherit; color:var(--ink);
+    background:var(--surface); border:1px solid var(--line); border-radius:9px; padding:12px 14px;
+  }
+  .oc-item:hover:not(:disabled){border-color:var(--accent); box-shadow:var(--shadow);}
+  .oc-item:disabled{opacity:.55; cursor:wait;}
+  .oc-hora{font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:12px; color:var(--ink-muted); font-variant-numeric:tabular-nums; line-height:1.35;}
+  .oc-nomes{display:flex; flex-direction:column; gap:2px; min-width:0;}
+  .oc-nomes span{font-size:13.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .oc-nomes em{font-style:normal; font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.04em; margin-right:5px;}
+  .oc-tags{display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;}
+  .oc-tag{font-size:10.5px; font-weight:600; padding:3px 8px; border-radius:20px; background:var(--surface-2); color:var(--ink-muted); white-space:nowrap;}
+  .oc-tag.ok{background:var(--accent-soft); color:var(--accent-strong);}
+  .oc-tag.atual{background:var(--ai-accent-soft); color:var(--ai-accent);}
+  .oc-vazio{
+    font-size:13px; color:var(--ink-faint); background:var(--surface); border:1px dashed var(--line);
+    border-radius:9px; padding:22px; text-align:center;
+  }
+
+  /* ---------- janela de uma ocorrência salva ---------- */
+  .oc-cab{min-width:0;}
+  .oc-sub{font-size:12px; color:var(--ink-muted); margin:3px 0 0;}
+  .oc-abas{display:flex; gap:4px; padding:8px 14px 0; border-bottom:1px solid var(--line); overflow-x:auto; background:var(--surface);}
+  .oc-aba{
+    font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:11px; font-weight:600; white-space:nowrap;
+    color:var(--ink-muted); background:transparent; border:none; border-bottom:2px solid transparent; padding:8px 10px 9px;
+  }
+  .oc-aba:hover{color:var(--ink);}
+  .oc-aba.active{color:var(--accent); border-bottom-color:var(--accent);}
+  .oc-texto{
+    font-family:"IBM Plex Serif",Georgia,serif; font-size:14.5px; line-height:1.75; color:var(--ink);
+    white-space:pre-wrap; user-select:text;
+  }
+  @media (max-width:720px){
+    main.backup-layout{padding:14px 12px 80px;}
+    .backup-busca{padding:12px;}
+    .backup-campo{flex:1 1 100%;}
+    .backup-campo input{font-size:16px;}
+    .backup-acoes{flex:1 1 100%;}
+    .backup-acoes .btn{flex:1; justify-content:center;}
+    .oc-item{grid-template-columns:1fr; gap:6px;}
+    .oc-tags{justify-content:flex-start;}
+    .backup-chip{padding:7px 10px; font-size:12px;}
+  }
+
   .draft-hint{font-size:12px; color:var(--ink-faint); margin:0 0 12px;}
   .draft-list{display:flex; flex-direction:column; gap:6px;}
   .draft-item{
@@ -1143,7 +1230,7 @@
   <div class="top-inner">
     <div class="brand">
       <span class="brand-eyebrow">Delegacia da Mulher de Porto Alegre</span>
-      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.27.1</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
+      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.28.0</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
     </div>
     <div class="top-spacer"></div>
     <span class="dash-mode-label" id="dashModeLabel" hidden>Painel de estat&iacute;sticas &mdash; dados an&ocirc;nimos</span>
@@ -1157,8 +1244,7 @@
         <button type="button" class="gender-btn active" data-gender="m">Suspeito</button>
         <button type="button" class="gender-btn" data-gender="f">Suspeita</button>
       </div>
-      <button class="btn small" id="draftLoadBtn" type="button">Abrir rascunho</button>
-      <button class="btn small" id="draftSaveBtn" type="button">Salvar rascunho</button>
+      <button class="backup-chip" id="backupChip" type="button" title="Toda ocorr&ecirc;ncia &eacute; salva sozinha enquanto voc&ecirc; preenche. Clique para ver as ocorr&ecirc;ncias salvas."><span class="backup-dot" aria-hidden="true"></span><span id="backupChipTxt">Backup autom&aacute;tico</span></button>
       <button class="btn danger small" id="resetBtn" type="button">Limpar tudo</button>
     </div>
   </div>
@@ -1196,6 +1282,7 @@
     <button type="button" class="view-tab active" id="viewTabForm" data-view="form">Formul&aacute;rio</button>
     <button type="button" class="view-tab" id="viewTabDashboard" data-view="dashboard">Painel de Estat&iacute;sticas</button>
     <button type="button" class="view-tab" id="viewTabNotes" data-view="notes">Bloco de Notas</button>
+    <button type="button" class="view-tab" id="viewTabBackup" data-view="backup">Ocorr&ecirc;ncias salvas</button>
   </div>
 </div>
 
@@ -1212,8 +1299,8 @@
 
 <main class="layout" id="formView">
   <div class="hint-banner">
-    <span>&#128274;</span>
-    <span><strong>O texto do depoimento n&atilde;o fica salvo em nenhum servidor</strong> &mdash; s&oacute; existe aqui, no seu navegador, at&eacute; voc&ecirc; copiar para o SPJ. Assim que as respostas principais estiverem completas, uma estat&iacute;stica an&ocirc;nima (sem nomes) &eacute; registrada sozinha para o painel de estat&iacute;sticas &mdash; n&atilde;o precisa clicar em nada. &ldquo;Salvar rascunho&rdquo; &eacute; opcional e guarda a oitiva completa por 24h, s&oacute; para continuar em outro computador.</span>
+    <span>&#128190;</span>
+    <span><strong>Backup autom&aacute;tico:</strong> cada ocorr&ecirc;ncia &eacute; salva sozinha enquanto voc&ecirc; preenche &mdash; n&atilde;o precisa clicar em nada &mdash; e fica 90 dias em &ldquo;Ocorr&ecirc;ncias salvas&rdquo;, vis&iacute;vel s&oacute; para a sua cidade. L&aacute; d&aacute; pra copiar de novo qualquer texto ou reabrir a ocorr&ecirc;ncia em outro computador. Quando as respostas principais estiverem completas, uma estat&iacute;stica an&ocirc;nima (sem nomes) tamb&eacute;m &eacute; registrada sozinha.</span>
   </div>
 
   <section class="form-col" id="formCol"></section>
@@ -1273,6 +1360,23 @@
   <textarea class="notes-text" id="notesText" placeholder="Digite qualquer anotação livre aqui — um lembrete, um detalhe solto, um rascunho de outra coisa..."></textarea>
 </main>
 
+<main class="layout backup-layout" id="backupView" hidden>
+  <div class="backup-head">
+    <h2 class="backup-titulo">Ocorr&ecirc;ncias salvas</h2>
+    <p class="backup-hint">Toda ocorr&ecirc;ncia &eacute; salva sozinha enquanto &eacute; preenchida. Fica guardada por 90 dias e aparece s&oacute; para a unidade de <strong id="backupCidade">&mdash;</strong>. Clique numa ocorr&ecirc;ncia para copiar de novo os textos ou continuar nela neste computador.</p>
+  </div>
+  <form class="backup-busca" id="backupBusca" autocomplete="off">
+    <label class="backup-campo"><span>Dia</span><input type="date" id="backupData"></label>
+    <label class="backup-campo cresce"><span>Nome da v&iacute;tima ou do suspeito</span><input type="text" id="backupTermo" placeholder="Digite parte do nome&hellip;"></label>
+    <div class="backup-acoes">
+      <button class="btn primary" type="submit">Pesquisar</button>
+      <button class="btn" type="button" id="backupTodosDias" title="Pesquisar nos &uacute;ltimos 90 dias">Todos os dias</button>
+    </div>
+  </form>
+  <p class="backup-resumo" id="backupResumo" aria-live="polite"></p>
+  <div class="backup-lista" id="backupLista"></div>
+</main>
+
 <div class="credit-strip">
   <div class="credit-strip-inner">
     <span class="credit-mark" aria-hidden="true">CA</span>
@@ -1308,18 +1412,17 @@
   </div>
 </div>
 
-<div class="preview-overlay" id="draftOverlay" hidden>
-  <div class="preview-modal narrow" role="dialog" aria-modal="true" aria-labelledby="draftTitle">
+<div class="preview-overlay" id="ocOverlay" hidden>
+  <div class="preview-modal wide" role="dialog" aria-modal="true" aria-labelledby="ocTitulo">
     <div class="preview-modal-head">
-      <h2 id="draftTitle">Abrir rascunho</h2>
-      <button type="button" class="preview-close" id="draftCloseBtn" aria-label="Fechar">&times;</button>
+      <div class="oc-cab"><h2 id="ocTitulo">Ocorr&ecirc;ncia</h2><p class="oc-sub" id="ocSub"></p></div>
+      <button type="button" class="preview-close" id="ocFechar" aria-label="Fechar">&times;</button>
     </div>
-    <div class="preview-modal-body">
-      <p class="draft-hint">Rascunhos salvos ficam dispon&iacute;veis por 24h, em qualquer computador.</p>
-      <div class="draft-list" id="draftList"></div>
-    </div>
+    <div class="oc-abas" id="ocAbas" role="tablist"></div>
+    <div class="preview-modal-body"><div class="oc-texto" id="ocTexto"></div></div>
     <div class="preview-modal-actions">
-      <button type="button" class="btn" id="draftCloseBtn2">Fechar</button>
+      <button type="button" class="btn" id="ocAbrirForm" title="Carrega todas as respostas no formul&aacute;rio para continuar ou corrigir">Abrir no formul&aacute;rio</button>
+      <button type="button" class="btn primary" id="ocCopiar">Copiar este texto</button>
     </div>
   </div>
 </div>
@@ -1982,7 +2085,7 @@
         '<div class="preview-modal-head"><h2>Esta cópia está desatualizada</h2></div>' +
         '<div class="preview-modal-body">' +
           '<p class="setup-unidade-texto">Você está usando um <strong>arquivo antigo</strong> do formulário, salvo no computador. ' +
-          'Ele não conversa mais com o sistema: rascunho, estatística e mensagens finais pararam de funcionar nesta cópia.</p>' +
+          'Ele não conversa mais com o sistema: backup, estatística e mensagens finais pararam de funcionar nesta cópia.</p>' +
           '<p class="setup-unidade-texto">Abra o endereço abaixo, <strong>salve nos favoritos</strong> e apague o arquivo antigo. ' +
           'A partir dele você sempre pega a versão mais nova, sem precisar baixar nada.</p>' +
           '<p style="text-align:center;margin-top:4px"><a class="btn primary" style="text-decoration:none" href="'+esc(link)+'">Abrir o formulário atualizado</a></p>' +
@@ -2364,7 +2467,7 @@
         scrollToField(missing[0], true);
         return;
       }
-      confirmarPendencias(function(){ registrarEstatisticaAgora(); copyToClipboard(currentDocText(docId), copyBtn); });
+      confirmarPendencias(function(){ registrarEstatisticaAgora(); salvarBackup(); copyToClipboard(currentDocText(docId), copyBtn); });
       return;
     }
     var previewBtn = e.target.closest("[data-preview]");
@@ -2375,7 +2478,7 @@
         scrollToField(missingPrev[0], true);
         return;
       }
-      confirmarPendencias(function(){ registrarEstatisticaAgora(); openPreviewModal(); });
+      confirmarPendencias(function(){ registrarEstatisticaAgora(); salvarBackup(); openPreviewModal(); });
     }
   });
 
@@ -2462,6 +2565,7 @@
     var id = ta.id.replace(/^docedit_/,"");
     var meta = document.getElementById("meta_"+id);
     if(meta) meta.textContent = ta.value.length+" caracteres";
+    agendarBackup();
   });
 
   function copyToClipboard(text, btn){
@@ -2509,7 +2613,6 @@
   var previewOverlay = document.getElementById("previewOverlay");
   var previewBody = document.getElementById("previewBody");
   var previewLastFocus = null;
-  var draftOverlay = document.getElementById("draftOverlay");
 
   var ROMAN_NUMERALS = ["I","II","III","IV","V","VI","VII","VIII"];
   function toRoman(n){ return ROMAN_NUMERALS[n-1] || String(n); }
@@ -2626,7 +2729,7 @@
   document.addEventListener("keydown", function(e){
     if(e.key !== "Escape") return;
     if(!previewOverlay.hidden) closePreviewModal();
-    if(!draftOverlay.hidden) closeDraftModal();
+    if(ocOverlay && !ocOverlay.hidden) fecharOcorrenciaSalva();
     if(pendOverlay && !pendOverlay.hidden) fecharPendencias();
   });
 
@@ -3531,6 +3634,7 @@
     rebuildActiveTabsIfNeeded();
     atualizarPrevisoes();
     tentarAutoRegistrarEstatistica();
+    agendarBackup();
   }
 
   // Mostra embaixo do campo como a frase vai sair no termo. Só nos dois
@@ -3673,7 +3777,7 @@
     clearTimeout(estatisticaTimer);
     estatisticaJaRegistrada = false; // preparar pro próximo preenchimento
     pendJaConfirmadas = "";          // nova ocorrência: volta a avisar das pendências
-    if(currentDraftId){ apagarRascunhoAtual(); }
+    backupNovaOcorrencia();          // salva a versão final desta e começa outra
     clearFormInputs();
     if(femaleSuspect){
       femaleSuspect = false;
@@ -4104,163 +4208,375 @@
     }
   }
 
-  // Id do rascunho salvo/aberto nesta sessão do formulário (se houver).
-  // Guardado pra que "Limpar tudo" possa apagá-lo — a ideia é que, ao concluir
-  // a oitiva e limpar o formulário, o rascunho dela não precisa mais existir.
-  var currentDraftId = null;
-  function apagarRascunhoAtual(){
-    var id = currentDraftId;
-    currentDraftId = null;
-    if(!id) return;
-    if(draftsCache) draftsCache = draftsCache.filter(function(rs){ return rs.id!==id; });
+  /* ============================================================
+     8b. BACKUP AUTOMÁTICO DAS OCORRÊNCIAS (substitui o "Salvar rascunho")
+     Cada ocorrência tem um Id e vira UMA linha na aba "Ocorrencias" da
+     planilha (ver Backup.gs). Enquanto a pessoa preenche, a linha é
+     atualizada sozinha ~2,5s depois da última mudança — só se algo mudou.
+     Copiar e Gerar PDF salvam na hora; fechar/trocar de aba manda o que
+     faltar por sendBeacon. Se a rede ou o servidor falhar, a ocorrência
+     fica guardada neste navegador e é reenviada sozinha (a cada minuto,
+     ao voltar a internet e na próxima abertura). "Limpar tudo" grava a
+     versão final e começa uma ocorrência nova, com outro Id.
+     ============================================================ */
+  function novoIdOcorrencia(){
+    try{ if(window.crypto && crypto.randomUUID) return crypto.randomUUID(); }catch(err){}
+    return "oc-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2,10) + Math.random().toString(36).slice(2,10);
+  }
+  var ocorrenciaId = novoIdOcorrencia();
+  var backupUltimaAssinatura = "";
+  var backupTimer = null;
+  var backupEmVoo = false;
+  var backupDeNovo = false;
+  var BACKUP_PEND_KEY = "oitiva_backupPendentes";
+  var backupChip = document.getElementById("backupChip");
+  var backupChipTxt = document.getElementById("backupChipTxt");
+
+  function temConteudoParaBackup(){
+    return !!(T("q1") || T("q2"));
+  }
+  function textosParaBackup(){
+    var isApf = state.q3 && state.q3.v==="apf";
+    var t = {};
+    DOCS.forEach(function(d){
+      if(d.apfOnly && !isApf){ t[d.id] = ""; return; }
+      try{ t[d.id] = currentDocText(d.id) || ""; }catch(err){ t[d.id] = ""; }
+    });
+    return t;
+  }
+  function montarBackup(){
+    collectState();
+    var tipo = (state.q3 && state.q3.v) ? (state.q3.v==="apf" ? "APF" : "Ocorrência Simples") : "";
+    return {
+      id: ocorrenciaId,
+      cidade: cidadeDaUnidade(),
+      nomeVitima: T("q1"),
+      nomeSuspeito: T("q2"),
+      tipo: tipo,
+      situacao: missingRequiredFields().length ? "Em andamento" : "Concluída",
+      versao: VERSAO_APP,
+      textos: textosParaBackup(),
+      dados: JSON.stringify(serializeFormState())
+    };
+  }
+  function horaCurta(d){
+    try{ return d.toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"}); }catch(err){ return ""; }
+  }
+  function marcarBackup(fase, erro){
+    if(!backupChip) return;
+    backupChip.classList.remove("salvando","ok","erro");
+    if(fase==="salvando"){
+      backupChip.classList.add("salvando");
+      backupChipTxt.textContent = "Salvando…";
+      backupChip.title = "Salvando o backup desta ocorrência na planilha.";
+    } else if(fase==="ok"){
+      backupChip.classList.add("ok");
+      backupChipTxt.textContent = "Backup salvo " + horaCurta(new Date());
+      backupChip.title = "Esta ocorrência está salva. Clique para ver as ocorrências salvas.";
+    } else if(fase==="erro"){
+      backupChip.classList.add("erro");
+      backupChipTxt.textContent = "Backup pendente";
+      backupChip.title = "Não deu para salvar agora (" + (erro || "sem conexão") + "). A ocorrência ficou guardada neste computador e é reenviada sozinha.";
+    } else {
+      backupChipTxt.textContent = "Backup automático";
+      backupChip.title = "Toda ocorrência é salva sozinha enquanto você preenche. Clique para ver as ocorrências salvas.";
+    }
+  }
+  function traduzirErroBackup(e){
+    e = e || "recusado pelo servidor";
+    if(/a[cç][aã]o desconhecida/i.test(e)) return "o Backup.gs ainda não foi instalado no Apps Script";
+    return e;
+  }
+  async function enviarBackup(p){
+    var j = await postarNoBackend({action:"salvarOcorrencia", ocorrencia:p});
+    if(j && j.ok!==false) return {ok:true};
+    var e = traduzirErroBackup(j && j.erro);
+    console.error("[oitiva] backup recusado:", e);
+    return {ok:false, erro:e};
+  }
+
+  // fila local (só do que NÃO conseguiu chegar na planilha)
+  function lerPendentes(){
     try{
-      fetch(AI_BACKEND_URL, { method:"POST", body: JSON.stringify({action:"apagarRascunho", id:id}) })
-        .catch(function(){});
+      var o = JSON.parse(localStorage.getItem(BACKUP_PEND_KEY) || "{}");
+      return (o && typeof o==="object") ? o : {};
+    }catch(err){ return {}; }
+  }
+  function gravarPendentes(o){
+    var ids = Object.keys(o).sort(function(a,b){ return (o[b].marca||0) - (o[a].marca||0); }).slice(0, 15);
+    var n = {};
+    ids.forEach(function(k){ n[k] = o[k]; });
+    try{
+      if(ids.length) localStorage.setItem(BACKUP_PEND_KEY, JSON.stringify(n));
+      else localStorage.removeItem(BACKUP_PEND_KEY);
     }catch(err){}
   }
-
-  document.getElementById("draftSaveBtn").addEventListener("click", async function(){
-    collectState();
-    var nome = (state.q1 && state.q1.text) || "";
-    var payload = serializeFormState();
-    var btn = this;
-    var old = btn.textContent;
-    btn.disabled = true; btn.textContent = "Salvando…";
-    try{
-      var j = await postarNoBackend({action:"salvarRascunho", nomeVitima: nome, dadosJson: JSON.stringify(payload)});
-      if(!j || j.ok===false) throw new Error((j && j.erro) || "Falha ao salvar rascunho.");
-      currentDraftId = j.id;
-      showToast('Rascunho salvo' + (nome ? ' ("'+nome+'")' : "") + ' — some sozinho em 24h.');
-      syncDraftsList(); // atualiza a lista em memória (e em outros computadores, na próxima rodada deles)
-    }catch(err){
-      showToast("Não foi possível salvar o rascunho: "+(err && err.message ? err.message : "sem conexão."));
-    }
-    btn.disabled = false; btn.textContent = old;
-  });
-
-  function formatDraftTime(v){
-    try{
-      var d = new Date(v);
-      if(isNaN(d.getTime())) return String(v);
-      return d.toLocaleString("pt-BR", {day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit"});
-    }catch(err){ return String(v); }
+  function guardarPendente(p){
+    var pend = lerPendentes();
+    pend[p.id] = p;
+    gravarPendentes(pend);
   }
-  var draftListEl = document.getElementById("draftList");
-  var draftLastFocus = null;
+  function tirarPendente(id, marca){
+    var pend = lerPendentes();
+    if(pend[id] && (pend[id].marca||0) <= marca){ delete pend[id]; gravarPendentes(pend); }
+  }
 
-  // ---- sincronização em segundo plano ----------------------------------
-  // A lista de rascunhos (nome + data, sem o conteúdo) é buscada sozinha em
-  // segundo plano assim que a página abre e a cada ~40s (só enquanto a aba
-  // está visível). "Abrir rascunho" então abre NA HORA com o que já está em
-  // memória — se alguém salvou um rascunho em outro computador, ele aparece
-  // aqui sozinho na próxima rodada, sem precisar esperar nada na hora de abrir.
-  var draftsCache = null;
-  var draftsSyncPromise = null; // rodada de fetch em andamento (ou null se nenhuma)
-  var draftsSyncQueued = false;  // pediram outra rodada enquanto essa já estava em voo
-  function renderDraftList(rascunhos){
-    if(!rascunhos.length){
-      draftListEl.innerHTML = '<p class="preview-empty">Nenhum rascunho salvo nas últimas 24h.</p>';
+  function agendarBackup(){
+    if(!temConteudoParaBackup()) return;
+    clearTimeout(backupTimer);
+    backupTimer = setTimeout(salvarBackup, 2500);
+  }
+  async function salvarBackup(){
+    clearTimeout(backupTimer); backupTimer = null;
+    if(!temConteudoParaBackup() || !cidadeDaUnidade()) return;
+    if(backupEmVoo){ backupDeNovo = true; return; }
+    var p = montarBackup();
+    var assinatura = JSON.stringify(p);
+    if(assinatura === backupUltimaAssinatura) return;
+    p.marca = Date.now();
+    backupEmVoo = true;
+    marcarBackup("salvando");
+    var r;
+    try{ r = await enviarBackup(p); }
+    catch(err){ r = {ok:false, erro: traduzirErroBackup(err && err.message ? err.message : "sem conexão")}; }
+    backupEmVoo = false;
+    backupUltimaAssinatura = assinatura;
+    if(r.ok){
+      tirarPendente(p.id, p.marca);
+      if(p.id === ocorrenciaId) marcarBackup("ok");
+    } else {
+      guardarPendente(p);
+      marcarBackup("erro", r.erro);
+    }
+    if(backupDeNovo){ backupDeNovo = false; salvarBackup(); }
+  }
+  // fechando a aba / indo pro SPJ: manda o que ainda não foi salvo
+  function backupViaBeacon(){
+    if(!temConteudoParaBackup() || !cidadeDaUnidade()) return;
+    var p = montarBackup();
+    var assinatura = JSON.stringify(p);
+    if(assinatura === backupUltimaAssinatura) return;
+    p.marca = Date.now();
+    guardarPendente(p); // se o beacon não chegar (ou passar de 64KB), vai na próxima abertura
+    backupUltimaAssinatura = assinatura;
+    clearTimeout(backupTimer); backupTimer = null;
+    try{
+      navigator.sendBeacon(AI_BACKEND_URL, new Blob([JSON.stringify({action:"salvarOcorrencia", versao:VERSAO_APP, ocorrencia:p})], {type:"text/plain"}));
+    }catch(err){}
+  }
+  document.addEventListener("visibilitychange", function(){ if(document.hidden) backupViaBeacon(); });
+  window.addEventListener("pagehide", backupViaBeacon);
+
+  var reenvioEmCurso = false;
+  async function reenviarBackupsPendentes(){
+    if(reenvioEmCurso) return;
+    var pend = lerPendentes();
+    var ids = Object.keys(pend);
+    if(!ids.length) return;
+    reenvioEmCurso = true;
+    try{
+      for(var i=0; i<ids.length; i++){
+        var p = pend[ids[i]];
+        var r;
+        try{ r = await enviarBackup(p); }catch(err){ r = {ok:false, erro: err && err.message}; }
+        if(!r.ok){ marcarBackup("erro", r.erro); return; }
+        tirarPendente(p.id, p.marca || 0);
+      }
+      if(backupChip && backupChip.classList.contains("erro")) marcarBackup(temConteudoParaBackup() ? "ok" : "ocioso");
+    } finally {
+      reenvioEmCurso = false;
+    }
+  }
+  setTimeout(reenviarBackupsPendentes, 3000);
+  setInterval(function(){ if(!document.hidden) reenviarBackupsPendentes(); }, 60000);
+  window.addEventListener("online", reenviarBackupsPendentes);
+
+  // "Limpar tudo" e "Abrir no formulário": garante a versão final desta
+  // ocorrência e troca o Id, pra próxima virar outra linha
+  function backupNovaOcorrencia(){
+    clearTimeout(backupTimer); backupTimer = null;
+    if(temConteudoParaBackup() && cidadeDaUnidade()){
+      var p = montarBackup();
+      if(JSON.stringify(p) !== backupUltimaAssinatura){
+        p.marca = Date.now();
+        guardarPendente(p);
+        reenviarBackupsPendentes();
+      }
+    }
+    ocorrenciaId = novoIdOcorrencia();
+    backupUltimaAssinatura = "";
+    marcarBackup("ocioso");
+  }
+
+  /* ---------- tela "Ocorrências salvas" ---------- */
+  var backupView = document.getElementById("backupView");
+  var backupLista = document.getElementById("backupLista");
+  var backupResumo = document.getElementById("backupResumo");
+  var backupData = document.getElementById("backupData");
+  var backupTermo = document.getElementById("backupTermo");
+  function hojeISO(){
+    var d = new Date();
+    return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+  }
+  backupData.value = hojeISO();
+  function fmtDiaISO(s){
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s || "");
+    return m ? m[3]+"/"+m[2]+"/"+m[1] : s;
+  }
+  function fmtDataHora(iso){
+    var d = new Date(iso);
+    if(isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("pt-BR", {day:"2-digit", month:"2-digit", year:"numeric"}) + "\n" + horaCurta(d);
+  }
+  var backupBuscaSeq = 0;
+  async function pesquisarBackup(){
+    var cidade = cidadeDaUnidade();
+    document.getElementById("backupCidade").textContent = cidade || "—";
+    if(!cidade){
+      backupResumo.textContent = "Escolha primeiro a cidade da unidade.";
+      backupLista.innerHTML = "";
+      pedirCidadeDaUnidade();
       return;
     }
-    draftListEl.innerHTML = rascunhos.map(function(rs){
-      return '<button type="button" class="draft-item" data-draft-id="'+esc(rs.id)+'">' +
-               '<span class="draft-item-name">'+esc(rs.nome || "(sem nome)")+'</span>' +
-               '<span class="draft-item-time">'+esc(formatDraftTime(rs.dataHora))+'</span>' +
-             '</button>';
+    var seq = ++backupBuscaSeq;
+    backupResumo.textContent = "Pesquisando…";
+    try{
+      // a ocorrência que está na tela agora já entra na lista
+      if(backupTimer) await salvarBackup();
+      var termo = backupTermo.value.trim();
+      var j = await postarNoBackend({action:"listarOcorrencias", filtro:{cidade:cidade, data:backupData.value || "", termo:termo}});
+      if(seq !== backupBuscaSeq) return;
+      if(!j || j.ok===false) throw new Error(traduzirErroBackup(j && j.erro));
+      renderListaBackup(j.ocorrencias || [], j.total || 0, termo);
+    }catch(err){
+      if(seq !== backupBuscaSeq) return;
+      backupResumo.textContent = "";
+      backupLista.innerHTML = '<p class="oc-vazio">Não foi possível pesquisar: '+esc(err && err.message ? err.message : "sem conexão")+'.</p>';
+    }
+  }
+  function renderListaBackup(lista, total, termo){
+    var filtro = (backupData.value ? "em "+fmtDiaISO(backupData.value) : "nos últimos 90 dias") + (termo ? ' com "'+termo+'"' : "");
+    if(!lista.length){
+      backupResumo.textContent = "";
+      backupLista.innerHTML = '<p class="oc-vazio">Nenhuma ocorrência salva '+esc(filtro)+'.' +
+        (backupData.value ? ' Tente "Todos os dias".' : '') + '</p>';
+      return;
+    }
+    backupResumo.textContent = total + (total===1 ? " ocorrência " : " ocorrências ") + filtro +
+      (total > lista.length ? " — mostrando as "+lista.length+" mais recentes" : "") + ".";
+    backupLista.innerHTML = lista.map(function(o){
+      var naTela = o.id === ocorrenciaId;
+      return '<button type="button" class="oc-item" data-oc="'+esc(o.id)+'">' +
+        '<span class="oc-hora">'+esc(fmtDataHora(o.criadoEm)).replace("\n","<br>")+'</span>' +
+        '<span class="oc-nomes">' +
+          '<span><em>Vítima</em><strong>'+esc(o.vitima || "(sem nome)")+'</strong></span>' +
+          '<span><em>Suspeito</em>'+esc(o.suspeito || "(sem nome)")+'</span>' +
+        '</span>' +
+        '<span class="oc-tags">' +
+          (naTela ? '<span class="oc-tag atual">na tela agora</span>' : '') +
+          (o.tipo ? '<span class="oc-tag">'+esc(o.tipo)+'</span>' : '') +
+          (o.situacao ? '<span class="oc-tag'+(o.situacao==="Concluída" ? " ok" : "")+'">'+esc(o.situacao)+'</span>' : '') +
+        '</span>' +
+      '</button>';
     }).join("");
   }
-  // Antes, uma chamada que chegasse enquanto outra rodada já estava em voo
-  // era simplesmente descartada ("if(draftsSyncing) return;") — sem repetir
-  // depois. Isso podia deixar draftsCache preso numa versão de antes de um
-  // "Salvar rascunho" (ex.: o sync automático da abertura da página ainda
-  // não tinha voltado quando o rascunho foi salvo, o pedido de atualização
-  // do próprio salvamento era descartado, e "Abrir rascunho" reaproveitava
-  // esse cache velho e vazio — mesmo com a linha já existindo na planilha).
-  // Agora, em vez de descartar, marca "pediram de novo" e encadeia mais uma
-  // rodada assim que a atual terminar — e devolve a MESMA promise até tudo
-  // (inclusive a rodada extra pedida) realmente terminar, então quem faz
-  // "await syncDraftsList()" só segue depois que a lista está confirmada.
-  function syncDraftsList(){
-    if(draftsSyncPromise){
-      draftsSyncQueued = true;
-      return draftsSyncPromise;
-    }
-    draftsSyncPromise = (async function(){
-      try{
-        var j = await postarNoBackend({action:"listarRascunhos"});
-        if(j && j.ok!==false){
-          draftsCache = j.rascunhos || [];
-          // se o modal estiver aberto no momento em que a sincronização chega,
-          // atualiza a lista na tela sem o usuário precisar fechar e abrir de novo.
-          if(!draftOverlay.hidden) renderDraftList(draftsCache);
-        }
-      }catch(err){ /* melhor esforço — próxima rodada tenta de novo */ }
-      draftsSyncPromise = null;
-      if(draftsSyncQueued){
-        draftsSyncQueued = false;
-        return syncDraftsList(); // uma rodada extra foi pedida enquanto essa rodava — roda agora
-      }
-    })();
-    return draftsSyncPromise;
-  }
-  syncDraftsList(); // primeira sincronização, assim que a página abre
-  setInterval(function(){
-    if(document.hidden) return; // não gasta chamada com a aba em segundo plano
-    syncDraftsList();
-  }, 40000);
-  // Se o usuário troca de aba (ex.: pra conferir a planilha) e volta, força
-  // uma sincronização na hora — sem isso, dava pra ficar até 40s vendo uma
-  // lista desatualizada, ou presa numa rodada que tinha sido descartada
-  // antes da correção acima.
-  document.addEventListener("visibilitychange", function(){
-    if(!document.hidden) syncDraftsList();
+  document.getElementById("backupBusca").addEventListener("submit", function(e){ e.preventDefault(); pesquisarBackup(); });
+  document.getElementById("backupTodosDias").addEventListener("click", function(){ backupData.value = ""; pesquisarBackup(); });
+  backupData.addEventListener("change", pesquisarBackup);
+  var backupTermoTimer = null;
+  backupTermo.addEventListener("input", function(){
+    clearTimeout(backupTermoTimer);
+    backupTermoTimer = setTimeout(pesquisarBackup, 600);
   });
 
-  async function openDraftModal(){
-    draftLastFocus = document.activeElement;
-    draftOverlay.hidden = false;
+  /* ---------- janela de uma ocorrência salva ---------- */
+  var ocOverlay = document.getElementById("ocOverlay");
+  var ocAtual = null, ocAba = "vitima", ocUltimoFoco = null;
+  function docsComTexto(o){
+    return DOCS.filter(function(d){ return String((o.textos || {})[d.id] || "").trim(); });
+  }
+  function mostrarAbaOc(id){
+    ocAba = id;
+    document.querySelectorAll("#ocAbas .oc-aba").forEach(function(b){
+      var ativa = b.getAttribute("data-ocaba") === id;
+      b.classList.toggle("active", ativa);
+      b.setAttribute("aria-selected", ativa ? "true" : "false");
+    });
+    document.getElementById("ocTexto").textContent = (ocAtual.textos || {})[id] || "";
+    document.querySelector("#ocOverlay .preview-modal-body").scrollTop = 0;
+  }
+  function mostrarOcorrenciaSalva(o){
+    ocAtual = o;
+    document.getElementById("ocTitulo").textContent = (o.vitima || "(vítima sem nome)") + " × " + (o.suspeito || "(suspeito sem nome)");
+    var criado = new Date(o.criadoEm), alterado = new Date(o.atualizadoEm);
+    var partes = [];
+    if(!isNaN(criado.getTime())) partes.push("Criada em " + criado.toLocaleDateString("pt-BR") + " às " + horaCurta(criado));
+    if(!isNaN(alterado.getTime())) partes.push("última alteração " + alterado.toLocaleDateString("pt-BR") + " às " + horaCurta(alterado));
+    if(o.tipo) partes.push(o.tipo);
+    if(o.situacao) partes.push(o.situacao);
+    document.getElementById("ocSub").textContent = partes.join(" · ");
+    var docs = docsComTexto(o);
+    document.getElementById("ocAbas").innerHTML = docs.map(function(d){
+      return '<button type="button" class="oc-aba" role="tab" data-ocaba="'+d.id+'">'+esc(d.label)+'</button>';
+    }).join("");
+    var copiar = document.getElementById("ocCopiar");
+    if(docs.length){
+      copiar.hidden = false;
+      mostrarAbaOc(docs[0].id);
+    } else {
+      copiar.hidden = true;
+      document.getElementById("ocTexto").textContent = "Esta ocorrência foi salva antes de gerar algum texto. Use \"Abrir no formulário\" para continuar nela.";
+    }
+    document.getElementById("ocAbrirForm").hidden = !o.dados;
+    ocUltimoFoco = document.activeElement;
+    ocOverlay.hidden = false;
     document.body.classList.add("preview-open");
-    var closeBtn = document.getElementById("draftCloseBtn");
-    if(closeBtn) closeBtn.focus();
-    if(draftsCache) renderDraftList(draftsCache); // mostra o que já tem em memória na hora, pra não deixar a tela em branco...
-    else draftListEl.innerHTML = '<p class="preview-empty">Carregando…</p>';
-    // ...e SEMPRE espera uma rodada de verdade terminar antes de considerar a
-    // lista definitiva — nunca "atira e esquece": se já havia uma rodada em
-    // voo, essa espera se junta a ela (e ainda garante mais uma rodada extra,
-    // pela fila do syncDraftsList()), então o que aparece aqui é sempre
-    // confirmado como atual, não só o que sobrou de uma sincronização antiga.
-    await syncDraftsList();
-    if(draftsCache) renderDraftList(draftsCache);
-    else draftListEl.innerHTML = '<p class="preview-empty">Não foi possível buscar os rascunhos. Tente de novo.</p>';
+    document.getElementById("ocFechar").focus();
   }
-  function closeDraftModal(){
-    draftOverlay.hidden = true;
+  function fecharOcorrenciaSalva(){
+    ocOverlay.hidden = true;
     document.body.classList.remove("preview-open");
-    if(draftLastFocus && draftLastFocus.focus) draftLastFocus.focus();
+    if(ocUltimoFoco && ocUltimoFoco.focus) ocUltimoFoco.focus();
   }
-  document.getElementById("draftLoadBtn").addEventListener("click", openDraftModal);
-  document.getElementById("draftCloseBtn").addEventListener("click", closeDraftModal);
-  document.getElementById("draftCloseBtn2").addEventListener("click", closeDraftModal);
-  draftOverlay.addEventListener("click", function(e){
-    if(e.target===draftOverlay) closeDraftModal();
-  });
-  draftListEl.addEventListener("click", async function(e){
-    var item = e.target.closest("[data-draft-id]");
+  backupLista.addEventListener("click", async function(e){
+    var item = e.target.closest("[data-oc]");
     if(!item) return;
     item.disabled = true;
     try{
-      var j = await postarNoBackend({action:"carregarRascunho", id:item.dataset.draftId});
-      if(!j || j.ok===false) throw new Error((j && j.erro) || "Rascunho não encontrado (pode ter expirado).");
-      var data = JSON.parse(j.dadosJson);
-      restoreFormState(data);
-      currentDraftId = item.dataset.draftId;
-      closeDraftModal();
-      showToast("Rascunho carregado.");
-      window.scrollTo({top:0, behavior:"instant"});
+      var j = await postarNoBackend({action:"carregarOcorrencia", id:item.getAttribute("data-oc"), cidade:cidadeDaUnidade()});
+      if(!j || j.ok===false) throw new Error(traduzirErroBackup(j && j.erro));
+      mostrarOcorrenciaSalva(j.ocorrencia);
     }catch(err){
-      showToast("Não foi possível carregar: "+(err && err.message ? err.message : "erro desconhecido."));
-      item.disabled = false;
+      showToast("Não foi possível abrir: " + (err && err.message ? err.message : "sem conexão"));
     }
+    item.disabled = false;
+  });
+  document.getElementById("ocAbas").addEventListener("click", function(e){
+    var b = e.target.closest("[data-ocaba]");
+    if(b) mostrarAbaOc(b.getAttribute("data-ocaba"));
+  });
+  document.getElementById("ocCopiar").addEventListener("click", function(){
+    if(ocAtual) copyToClipboard((ocAtual.textos || {})[ocAba] || "", this);
+  });
+  document.getElementById("ocFechar").addEventListener("click", fecharOcorrenciaSalva);
+  ocOverlay.addEventListener("click", function(e){ if(e.target === ocOverlay) fecharOcorrenciaSalva(); });
+  document.getElementById("ocAbrirForm").addEventListener("click", function(){
+    if(!ocAtual || !ocAtual.dados) return;
+    var dados;
+    try{ dados = JSON.parse(ocAtual.dados); }catch(err){ showToast("As respostas desta ocorrência não puderam ser lidas."); return; }
+    var naTela = ocAtual.id === ocorrenciaId;
+    if(!naTela && temConteudoParaBackup() &&
+       !confirm("Abrir esta ocorrência no formulário?\n\nO que está na tela agora já fica salvo no backup e pode ser reaberto depois por aqui.")) return;
+    if(!naTela) backupNovaOcorrencia();
+    restoreFormState(dados);
+    ocorrenciaId = ocAtual.id;
+    clearTimeout(backupTimer); backupTimer = null;
+    backupUltimaAssinatura = JSON.stringify(montarBackup());
+    marcarBackup("ok");
+    fecharOcorrenciaSalva();
+    switchView("form");
+    window.scrollTo({top:0, behavior:"instant"});
+    showToast("Ocorrência aberta — as alterações continuam salvando nela.");
   });
 
   /* ============================================================
@@ -4782,15 +5098,19 @@
   var viewTabForm = document.getElementById("viewTabForm");
   var viewTabDashboard = document.getElementById("viewTabDashboard");
   var viewTabNotes = document.getElementById("viewTabNotes");
+  var viewTabBackup = document.getElementById("viewTabBackup");
   var formOnlyControls = document.getElementById("formOnlyControls");
   var dashModeLabel = document.getElementById("dashModeLabel");
   function switchView(view){
     var showDash = view==="dashboard";
     var showNotes = view==="notes";
-    var showForm = !showDash && !showNotes;
+    var showBackup = view==="backup";
+    var showForm = !showDash && !showNotes && !showBackup;
     formView.hidden = !showForm;
     dashboardView.hidden = !showDash;
     notesView.hidden = !showNotes;
+    backupView.hidden = !showBackup;
+    viewTabBackup.classList.toggle("active", showBackup);
     viewTabForm.classList.toggle("active", showForm);
     viewTabDashboard.classList.toggle("active", showDash);
     viewTabNotes.classList.toggle("active", showNotes);
@@ -4798,6 +5118,7 @@
     // uma oitiva (progresso, tipo, rascunho, limpar) — telas separadas de vez.
     formOnlyControls.hidden = !showForm;
     dashModeLabel.hidden = !showDash;
+    if(showBackup) pesquisarBackup();
     if(showDash && !statsLoadedOnce){
       statsLoadedOnce = true;
       loadStats();
@@ -4806,6 +5127,8 @@
   viewTabForm.addEventListener("click", function(){ switchView("form"); });
   viewTabDashboard.addEventListener("click", function(){ switchView("dashboard"); });
   viewTabNotes.addEventListener("click", function(){ switchView("notes"); });
+  viewTabBackup.addEventListener("click", function(){ switchView("backup"); });
+  document.getElementById("backupChip").addEventListener("click", function(){ switchView("backup"); });
 
   /* ---------- bloco de notas (rascunho livre, só localStorage) ---------- */
   (function initNotes(){
@@ -5079,7 +5402,7 @@
      não altera nada guardado nem afeta quem abrir o arquivo normalmente.
      ============================================================ */
 
-  var _pbA = "02990", _pbB = "26";
+  var _pbA = "03135", _pbB = "35";
   function referenciaDeCarga(){ return parseInt(_pbA + _pbB, 10); }
 
   var CAMPANHAS = {
@@ -5269,7 +5592,7 @@
     "O scanner continua com aquele barulho. Ignore.",
     "Bom dia. Se o SPJ cair, não foi você. Provavelmente.",
     "O computador é velho, o prazo não. Toque o barco.",
-    "Bom dia. Salvar rascunho leva dois segundos. Perder tudo leva mais.",
+    "Bom dia. O backup salva sozinho. Conferir se copiou o termo certo continua sendo com você.",
     "A impressora tem papel. Comemore com moderação.",
     "Bom dia. Ninguém sabe de quem é aquele cabo solto. Não mexa.",
     "O toner acaba sempre no documento mais urgente.",
@@ -5465,7 +5788,7 @@
     "Boa noite. Conferir antes de copiar continua sendo mais rápido.",
     "Não deixe campo em branco esperando lembrar depois. Você não vai.",
     "Boa noite. Com sono, gere o PDF e leia: é mais fácil achar erro no texto pronto.",
-    "Salvar rascunho antes de sair da sala. Sempre.",
+    "Copiou o histórico no lugar do termo? Ocorrências salvas. A vítima agradece, o cartório também.",
     "Boa noite. Uma frase clara vale mais que três bem escritas.",
     "O que estiver confuso no termo volta como pedido de esclarecimento.",
     "Boa noite. Escreva como quem vai ter que explicar isso em juízo. Porque pode.",
@@ -5500,7 +5823,7 @@
     "Papel acabando às três é tradição da casa.",
     "Boa noite. O formulário funciona sem internet. Uma preocupação a menos.",
     "Internet caiu? O texto continua aqui. Só não feche a aba.",
-    "Boa noite. Salvar rascunho guarda por 24 horas. Use.",
+    "Boa noite. O backup guarda 90 dias. A memória do plantão, nem 90 minutos.",
     "A luz do corredor que pisca vai continuar piscando. Não é você.",
     "Boa noite. O ar-condicionado à noite é sempre extremo. Escolha seu lado.",
     "Ninguém troca lâmpada de madrugada. Acostume-se.",
