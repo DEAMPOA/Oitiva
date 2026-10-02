@@ -665,11 +665,30 @@
   }
   .doc .filled{color:var(--ink);}
   .doc .blank{color:var(--ink-faint); font-style:italic;}
+  /* Caixa de edição manual: um <textarea> nasce com ~2 linhas de altura,
+     o que deixava a edição apertada e ruim de ler. Enquanto a aba da frente
+     está em edição manual, o <body> ganha a classe "editando-doc" e a
+     caixa estica até o fim da tela (regras logo abaixo). */
   .doc-edit{
-    flex:1; overflow:auto; background:var(--paper); border:1px solid var(--ai-accent);
+    flex:1 1 auto; width:100%; overflow:auto;
+    background:var(--paper); border:1px solid var(--ai-accent);
     border-radius:8px; padding:16px 18px; resize:vertical;
     font-family:"IBM Plex Serif",Georgia,serif; font-size:14.5px; line-height:1.7; color:var(--ink);
-    min-height:160px;
+    min-height:320px;
+  }
+  /* computador: a coluna da direita (sticky) ocupa a altura toda da tela e
+     a caixa preenche o que sobra, até embaixo */
+  body.editando-doc .output-col{top:calc(var(--edit-topo,74px) + 10px); height:calc(100vh - var(--edit-topo,74px) - var(--edit-rodape,50px) - 20px); max-height:none;}
+  body.editando-doc .panels{overflow:hidden;}
+  body.editando-doc .panel.active{flex:1; min-height:0;}
+  body.editando-doc .panel.active .doc-edit:not([hidden]){flex:1 1 0; min-height:0; resize:none;}
+  /* celular/tablet: a página inteira rola, então a caixa ganha uma altura
+     fixa generosa em vez de depender da coluna */
+  @media (max-width:980px){
+    body.editando-doc main.layout{padding-bottom:64px;} /* a faixa de créditos fixa não tampa o fim da caixa */
+    body.editando-doc .output-col{height:auto;}
+    body.editando-doc .panels{overflow:visible;}
+    body.editando-doc .panel.active .doc-edit:not([hidden]){flex:0 0 auto; height:max(360px, calc(100vh - var(--edit-topo,150px) - var(--edit-rodape,50px) - 64px)); min-height:360px; resize:vertical;}
   }
   .doc-edit[hidden]{display:none;}
   .doc-edit-actions{
@@ -1124,7 +1143,7 @@
   <div class="top-inner">
     <div class="brand">
       <span class="brand-eyebrow">Delegacia da Mulher de Porto Alegre</span>
-      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.27.0</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
+      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.27.1</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
     </div>
     <div class="top-spacer"></div>
     <span class="dash-mode-label" id="dashModeLabel" hidden>Painel de estat&iacute;sticas &mdash; dados an&ocirc;nimos</span>
@@ -2227,6 +2246,8 @@
     panelsEl.querySelectorAll(".panel").forEach(function(p){ p.classList.remove("active"); });
     btn.classList.add("active");
     panelsEl.querySelector('.panel[data-panel="'+btn.dataset.tab+'"]').classList.add("active");
+    // a aba que acabou de aparecer só agora tem posição medível
+    atualizarAlturaEdicao();
   });
 
   // ---- edição manual do texto compilado ---------------------------------
@@ -2243,6 +2264,30 @@
     }
     return COMPOSERS[id] ? COMPOSERS[id]() : "";
   }
+  /* A caixa de edição manual é um <textarea>, e a altura "natural" de um
+     textarea é de duas linhas — por isso ela nascia num retângulo baixinho,
+     péssimo pra reler e ajustar um depoimento inteiro. Em vez de chutar um
+     número de pixels, a classe "editando-doc" no <body> faz a coluna da
+     direita ocupar a altura cheia da tela e a caixa esticar até embaixo
+     (ver o CSS de .editando-doc). Vale só enquanto a aba que está na frente
+     é uma que está em edição manual, pra não mexer no visual normal. */
+  function atualizarAlturaEdicao(){
+    var ativa = panelsEl.querySelector(".panel.active");
+    var id = ativa ? ativa.getAttribute("data-panel") : "";
+    document.body.classList.toggle("editando-doc", !!(id && docManual[id]));
+    medirMoldura();
+  }
+  // o cabeçalho (que muda de altura conforme a largura da tela) e a faixa de
+  // créditos fixa no rodapé tampam parte da tela — mede os dois pra caixa
+  // terminar exatamente onde o espaço visível termina
+  function medirMoldura(){
+    var topo = document.querySelector("header.top");
+    var rod = document.querySelector(".credit-strip");
+    var st = document.body.style;
+    st.setProperty("--edit-topo", (topo ? Math.round(topo.getBoundingClientRect().bottom > 0 ? topo.offsetHeight : 0) : 74) + "px");
+    st.setProperty("--edit-rodape", (rod && getComputedStyle(rod).position === "fixed" ? rod.offsetHeight : 0) + "px");
+  }
+  window.addEventListener("resize", function(){ if(document.body.classList.contains("editando-doc")) medirMoldura(); });
   function enterDocManualMode(id){
     var text = currentDocText(id);
     var ta = document.getElementById("docedit_"+id);
@@ -2256,13 +2301,14 @@
     if(actions) actions.hidden = false;
     var editBtn = panelsEl.querySelector('[data-editdoc="'+id+'"]');
     if(editBtn) editBtn.hidden = true;
-    ta.focus();
+    atualizarAlturaEdicao();
+    try{ ta.focus({preventScroll:true}); }catch(err){ ta.focus(); }
   }
   function exitDocManualMode(id){
     docManual[id] = false;
     var ta = document.getElementById("docedit_"+id);
     var div = document.getElementById("doc_"+id);
-    if(ta) ta.hidden = true;
+    if(ta){ ta.hidden = true; ta.style.height = ""; }
     if(div) div.hidden = false;
     var actions = document.getElementById("doceditActions_"+id);
     if(actions) actions.hidden = true;
@@ -2270,10 +2316,32 @@
     if(editBtn) editBtn.hidden = false;
     prevDocText[id] = ""; // força repintar (com destaque) o texto automático
     renderDoc(id);
+    atualizarAlturaEdicao();
   }
   panelsEl.addEventListener("click", function(e){
     var editBtn = e.target.closest("[data-editdoc]");
-    if(editBtn){ enterDocManualMode(editBtn.dataset.editdoc); return; }
+    if(editBtn){
+      enterDocManualMode(editBtn.dataset.editdoc);
+      // leva a caixa pra dentro da tela: no computador, encosta a coluna no
+      // topo (é onde ela fica "grudada" e ocupa a altura toda); no celular,
+      // posiciona o início da caixa logo abaixo do cabeçalho
+      var alvo = window.innerWidth > 980 ? document.querySelector(".output-col") : document.getElementById("docedit_"+editBtn.dataset.editdoc);
+      if(alvo){
+        var folga = (parseInt(document.body.style.getPropertyValue("--edit-topo"),10) || 74) + 10;
+        window.scrollTo({top: Math.max(0, window.scrollY + alvo.getBoundingClientRect().top - folga), behavior:"instant"});
+      }
+      // celular: a página inteira rola, então o fim útil depende de onde a
+      // caixa parou — mede depois do scroll e fecha a altura rente ao rodapé
+      if(window.innerWidth <= 980){
+        var caixaMob = document.getElementById("docedit_"+editBtn.dataset.editdoc);
+        var rodMob = document.querySelector(".credit-strip");
+        if(caixaMob){
+          var livre = window.innerHeight - caixaMob.getBoundingClientRect().top - (rodMob ? rodMob.offsetHeight : 0) - 12;
+          caixaMob.style.height = Math.max(300, Math.round(livre)) + "px";
+        }
+      }
+      return;
+    }
 
     var revertBtn = e.target.closest("[data-revertdoc]");
     if(revertBtn){
@@ -3616,7 +3684,7 @@
     }
     recompute();
     showToast("Formulário limpo.");
-    window.scrollTo({top:0, behavior:"smooth"});
+    window.scrollTo({top:0, behavior:"instant"});
   });
 
   /* ============================================================
@@ -4188,7 +4256,7 @@
       currentDraftId = item.dataset.draftId;
       closeDraftModal();
       showToast("Rascunho carregado.");
-      window.scrollTo({top:0, behavior:"smooth"});
+      window.scrollTo({top:0, behavior:"instant"});
     }catch(err){
       showToast("Não foi possível carregar: "+(err && err.message ? err.message : "erro desconhecido."));
       item.disabled = false;
@@ -5011,7 +5079,7 @@
      não altera nada guardado nem afeta quem abrir o arquivo normalmente.
      ============================================================ */
 
-  var _pbA = "02946", _pbB = "98";
+  var _pbA = "02990", _pbB = "26";
   function referenciaDeCarga(){ return parseInt(_pbA + _pbB, 10); }
 
   var CAMPANHAS = {
