@@ -272,17 +272,24 @@
   .badge.apf{background:var(--header-badge-apf-bg); color:var(--header-badge-apf-ink); border-color:transparent;}
   .badge.simples{background:var(--header-badge-simples-bg); color:var(--header-badge-simples-ink); border-color:transparent;}
 
+  /* chave Suspeito/Suspeita — pequena e discreta, na seção Identificação */
+  .genero-box{
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    margin:0 0 14px; padding:0;
+  }
+  .genero-txt{font-size:12px; font-weight:600; color:var(--ink-muted);}
   .gender-toggle{
-    display:flex; align-items:center; background:var(--header-surface-2); border:1px solid var(--header-line);
+    display:inline-flex; align-items:center; background:var(--surface-2); border:1px solid var(--line);
     border-radius:7px; padding:2px; gap:2px;
   }
   .gender-btn{
-    font-family:"IBM Plex Sans",sans-serif; font-size:12px; font-weight:600; color:var(--header-ink-muted);
-    background:transparent; border:none; border-radius:5px; padding:6px 11px;
+    font-family:"IBM Plex Sans",sans-serif; font-size:12px; font-weight:600; color:var(--ink-muted);
+    background:transparent; border:none; border-radius:5px; padding:4px 11px; min-height:26px;
     transition:background .15s, color .15s;
   }
-  .gender-btn:hover{color:var(--header-ink);}
-  .gender-btn.active{background:var(--header-accent); color:var(--header-accent-ink);}
+  .gender-btn:hover{color:var(--ink);}
+  .gender-btn.active{background:var(--accent); color:var(--accent-ink);}
+  .gender-btn:focus-visible{outline:2px solid var(--focus); outline-offset:2px;}
 
   .form-only-controls{display:contents;}
   .form-only-controls[hidden]{display:none;}
@@ -750,7 +757,7 @@
     .progress-wrap{order:1;}
     .progress-track{width:74px;}
     .badge{font-size:9.5px; padding:4px 7px;}
-    .gender-btn{padding:6px 12px; font-size:12.5px;}
+    .gender-btn{padding:6px 13px; min-height:32px; font-size:12.5px;}
     header.top .btn{padding:7px 10px; font-size:12px;}
 
     .view-switch{padding:0 10px;}
@@ -1046,6 +1053,54 @@
     .backup-chip{padding:7px 10px; font-size:12px;}
   }
 
+  /* ---------- manual ("Como usar") ---------- */
+  .manual-tab{position:relative;}
+  .manual-novo{
+    position:absolute; top:7px; right:-9px; width:10px; height:10px; border-radius:50%;
+    background:var(--required); box-shadow:0 0 0 2px var(--surface);
+  }
+  .manual-novo[hidden]{display:none;}
+  .manual-modal{max-width:860px;}
+  .manual-barra{padding:10px 18px 12px; border-bottom:1px solid var(--line); background:var(--surface); display:flex; flex-direction:column; gap:9px;}
+  #manualBusca{
+    width:100%; font-family:inherit; font-size:14px; color:var(--ink); background:var(--paper);
+    border:1px solid var(--line); border-radius:8px; padding:9px 11px; min-height:40px;
+  }
+  #manualBusca:focus{outline:2px solid var(--focus); outline-offset:1px;}
+  .manual-chips{display:flex; gap:6px; flex-wrap:wrap;}
+  .manual-chip{
+    font-family:inherit; font-size:11.5px; font-weight:600; color:var(--ink-muted);
+    background:var(--surface-2); border:1px solid transparent; border-radius:20px; padding:4px 10px;
+  }
+  .manual-chip:hover{color:var(--accent); border-color:var(--accent);}
+  .manual-chip.dest{background:var(--accent-soft); color:var(--accent-strong);}
+  .manual-corpo{display:flex; flex-direction:column; gap:14px; scroll-behavior:smooth;}
+  .manual-sec{
+    background:var(--surface); border:1px solid var(--line); border-radius:10px; padding:14px 16px 12px;
+  }
+  .manual-sec[hidden]{display:none;}
+  .manual-sec.destaque{border-color:var(--accent); background:var(--accent-soft);}
+  .manual-sec h3{display:flex; align-items:center; gap:10px; font-size:15px; font-weight:600; margin:0 0 8px; color:var(--ink);}
+  .man-n{
+    flex-shrink:0; width:24px; height:24px; border-radius:50%; background:var(--accent); color:var(--accent-ink);
+    display:inline-flex; align-items:center; justify-content:center; font-size:12px; font-weight:700;
+  }
+  .manual-sec p, .manual-sec li{font-size:13.5px; line-height:1.65; color:var(--ink);}
+  .manual-sec ul, .manual-sec ol{margin:6px 0 0; padding-left:20px; display:flex; flex-direction:column; gap:6px;}
+  .manual-sec a{color:var(--accent); font-weight:600;}
+  .man-obrig{color:var(--required); font-weight:700;}
+  .manual-vazio, .manual-rodape{font-size:12.5px; color:var(--ink-faint); text-align:center; margin:0;}
+  @media (max-width:720px){
+    .manual-novo{right:-4px;}
+    .manual-barra{padding:9px 12px 10px;}
+    #manualBusca{font-size:16px;}
+    /* celular: atalhos em UMA linha que rola de lado, pra sobrar tela pra leitura */
+    .manual-chips{flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-bottom:2px;}
+    .manual-chips::-webkit-scrollbar{display:none;}
+    .manual-chip{flex-shrink:0; white-space:nowrap;}
+    .manual-sec{padding:12px 13px 10px;}
+  }
+
   .draft-hint{font-size:12px; color:var(--ink-faint); margin:0 0 12px;}
   .draft-list{display:flex; flex-direction:column; gap:6px;}
   .draft-item{
@@ -1230,7 +1285,7 @@
   <div class="top-inner">
     <div class="brand">
       <span class="brand-eyebrow">Delegacia da Mulher de Porto Alegre</span>
-      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.28.0</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
+      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.30.1</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
     </div>
     <div class="top-spacer"></div>
     <span class="dash-mode-label" id="dashModeLabel" hidden>Painel de estat&iacute;sticas &mdash; dados an&ocirc;nimos</span>
@@ -1240,10 +1295,6 @@
         <span class="progress-label" id="progressLabel">0/0</span>
       </div>
       <span class="badge" id="caseBadge">sem tipo definido</span>
-      <div class="gender-toggle" id="genderToggle" role="group" aria-label="Sexo da pessoa suspeita">
-        <button type="button" class="gender-btn active" data-gender="m">Suspeito</button>
-        <button type="button" class="gender-btn" data-gender="f">Suspeita</button>
-      </div>
       <button class="backup-chip" id="backupChip" type="button" title="Toda ocorr&ecirc;ncia &eacute; salva sozinha enquanto voc&ecirc; preenche. Clique para ver as ocorr&ecirc;ncias salvas."><span class="backup-dot" aria-hidden="true"></span><span id="backupChipTxt">Backup autom&aacute;tico</span></button>
       <button class="btn danger small" id="resetBtn" type="button">Limpar tudo</button>
     </div>
@@ -1283,6 +1334,7 @@
     <button type="button" class="view-tab" id="viewTabDashboard" data-view="dashboard">Painel de Estat&iacute;sticas</button>
     <button type="button" class="view-tab" id="viewTabNotes" data-view="notes">Bloco de Notas</button>
     <button type="button" class="view-tab" id="viewTabBackup" data-view="backup">Ocorr&ecirc;ncias salvas</button>
+    <button type="button" class="view-tab manual-tab" id="manualBtn" title="Manual: tudo o que o sistema faz, como trocar Suspeito/Suspeita, backup, PDF e mais">Como usar<span class="manual-novo" id="manualNovo" aria-hidden="true"></span></button>
   </div>
 </div>
 
@@ -1408,6 +1460,140 @@
     <div class="preview-modal-actions">
       <button type="button" class="btn" id="previewCloseBtn2">Fechar</button>
       <button type="button" class="btn primary" id="previewPrintBtn">Imprimir / Salvar PDF</button>
+    </div>
+  </div>
+</div>
+
+<div class="preview-overlay" id="manualOverlay" hidden>
+  <div class="preview-modal wide manual-modal" role="dialog" aria-modal="true" aria-labelledby="manualTitulo">
+    <div class="preview-modal-head">
+      <div class="oc-cab"><h2 id="manualTitulo">Como usar o Assistente de Oitiva</h2><p class="oc-sub">Tudo o que o sistema faz, em ordem. Leva 3 minutos para ler e economiza muito retrabalho.</p></div>
+      <button type="button" class="preview-close" id="manualFechar" aria-label="Fechar">&times;</button>
+    </div>
+    <div class="manual-barra">
+      <input type="search" id="manualBusca" placeholder="Procurar no manual: gênero, PDF, backup, IA…" autocomplete="off" aria-label="Procurar no manual">
+      <div class="manual-chips" id="manualChips"></div>
+    </div>
+    <div class="preview-modal-body manual-corpo" id="manualCorpo">
+
+      <section class="manual-sec destaque" id="man-genero" data-chave="genero suspeito suspeita feminino masculino concordância mulher homem">
+        <h3><span class="man-n">1</span> Suspeito ou Suspeita — o texto muda sozinho</h3>
+        <p>Na primeira seção do formulário (<strong>Identificação</strong>), logo acima do nome do suspeito, existe a chave pequena <strong>Autor da violência: Suspeito | Suspeita</strong>. Se quem praticou a violência é uma <strong>mulher</strong>, clique em <strong>Suspeita</strong>.</p>
+        <ul>
+          <li>O sistema reescreve <strong>todos os textos</strong> no feminino: "o suspeito" vira "a suspeita", "seu/sua", "dele/dela", "autuado/autuada" e assim por diante.</li>
+          <li>As perguntas do formulário também trocam ("Nome da suspeita", "Qual a relação com a suspeita?").</li>
+          <li>Pode trocar a qualquer momento. Nada do que já foi digitado se perde.</li>
+          <li>O padrão é <em>Suspeito</em>. <strong>Se esquecer de trocar, o termo sai errado</strong> e você só percebe na leitura.</li>
+        </ul>
+      </section>
+
+      <section class="manual-sec" id="man-comeco" data-chave="primeiros passos começar cidade unidade obrigatórias contador">
+        <h3><span class="man-n">2</span> Primeiros passos</h3>
+        <ol>
+          <li><strong>Cidade da unidade:</strong> no primeiro acesso em cada computador o sistema pergunta a cidade. Só aceita município da lista do RS (não digita livre). Serve para separar estatísticas, backup e mensagens por delegacia.</li>
+          <li><strong>Preencha o formulário</strong> à esquerda, de cima para baixo. Os textos aparecem à direita e se atualizam a cada resposta.</li>
+          <li><strong>Obrigatórias:</strong> são 11, marcadas com <span class="man-obrig">*</span> em vermelho. O contador no topo mostra o andamento (ex.: 7/11). Sem elas, <em>Copiar</em> e <em>Gerar PDF</em> não liberam.</li>
+          <li>Todas as outras perguntas são opcionais: o que não for respondido simplesmente não entra no texto.</li>
+        </ol>
+      </section>
+
+      <section class="manual-sec" id="man-form" data-chave="perguntas números tooltip jurídico importância apf ocorrência simples previsão">
+        <h3><span class="man-n">3</span> O formulário</h3>
+        <ul>
+          <li><strong>Número da pergunta:</strong> passe o mouse (ou toque, no celular) sobre o número colorido de cada pergunta. Abre um balão explicando <strong>por que aquela informação importa</strong> para o processo (agravantes, Lei Maria da Penha, medidas protetivas…). Nas perguntas sem peso jurídico, o balão explica onde a informação é usada (relatórios, texto, estatística).</li>
+          <li><strong>APF ou Ocorrência Simples (pergunta 3):</strong> escolher <strong>APF</strong> libera as perguntas e os documentos do <strong>condutor</strong>, das <strong>testemunhas</strong> e do <strong>indiciado</strong>. Em Ocorrência Simples essas abas ficam desativadas.</li>
+          <li><strong>Perguntas que aparecem conforme a resposta:</strong> ex.: marcar que há filhos abre "quantos" e "presenciaram?". Não precisa procurar nada escondido.</li>
+          <li><strong>Prévia da frase:</strong> nos campos de tempo de relacionamento e separação, aparece embaixo <em>"No texto vai sair: …"</em>. Assim "juntos a 12 anos" é ajustado e você vê como ficou antes de seguir.</li>
+          <li><strong>Local do fato (cidade):</strong> pergunta obrigatória, escolhida só na lista. Vai <u>apenas para a estatística</u>, nunca para o texto do depoimento.</li>
+          <li><strong>Crimes sofridos:</strong> marque todos que se aplicam. No descumprimento de MPU, informe o nº do processo e a data da intimação (o sistema formata sozinho).</li>
+        </ul>
+      </section>
+
+      <section class="manual-sec" id="man-textos" data-chave="textos abas copiar pdf editar manualmente histórico termo condutor testemunhas indiciado">
+        <h3><span class="man-n">4</span> Os textos gerados (lado direito)</h3>
+        <ul>
+          <li><strong>Abas:</strong> Termo da Vítima, Histórico da Ocorrência e, em APF, Depoimento do Condutor, das Testemunhas e do Indiciado. Uma <strong>bolinha vermelha</strong> na aba avisa que faltam respostas obrigatórias para aquele documento.</li>
+          <li><strong>Copiar:</strong> copia o texto <u>da aba que está aberta</u>. Confira o nome da aba antes de colar no SPJ — é o erro mais comum (histórico colado no lugar do termo).</li>
+          <li><strong>Gerar PDF:</strong> abre a pré-visualização dos <strong>depoimentos</strong> (o Histórico não entra) com cabeçalho e identificação. Clique em <em>Imprimir / Salvar PDF</em>. Trechos sensíveis (arma de fogo, decisão de representar) saem destacados com uma elipse.</li>
+          <li><strong>Editar manualmente:</strong> transforma o texto numa caixa editável, para acrescentar algo que não tem campo no formulário. A caixa ocupa a tela até embaixo para facilitar a leitura. <strong>Atenção:</strong> daquele documento em diante o texto <u>para de se atualizar sozinho</u>, para não apagar o que você escreveu. Para voltar ao automático, use <em>Voltar ao texto automático</em> (descarta a edição).</li>
+        </ul>
+      </section>
+
+      <section class="manual-sec" id="man-pend" data-chave="pendências aviso perguntas não respondidas continuar assim">
+        <h3><span class="man-n">5</span> Aviso de perguntas sem resposta</h3>
+        <p>Ao clicar em <em>Copiar</em> ou <em>Gerar PDF</em>, se houver perguntas <strong>opcionais</strong> em branco, aparece uma janelinha com a lista. É só um lembrete: leia, clique em <strong>Voltar e responder</strong> ou em <strong>Continuar assim</strong>. Se continuar, ele não insiste de novo para as mesmas pendências nessa ocorrência. Já as <strong>11 obrigatórias</strong> travam a ação e levam você até a pergunta que falta.</p>
+      </section>
+
+      <section class="manual-sec" id="man-ia" data-chave="ia inteligência artificial reescrever depoimento relato gemini">
+        <h3><span class="man-n">6</span> Reescrever com IA (depoimento da vítima)</h3>
+        <ul>
+          <li>Na pergunta do depoimento, o botão <strong>✦ Reescrever com IA</strong> pega o que você digitou e devolve, <strong>numa caixa separada</strong>, uma versão corrigida e mais formal.</li>
+          <li>O campo original <strong>não muda</strong> até você clicar em <strong>Usar este texto</strong>. Se não gostar, <strong>Descartar</strong>.</li>
+          <li>A IA é instruída a não inventar nem alterar fatos, mas <strong>a conferência é sempre sua</strong>: nomes, datas, horários e valores precisam bater com o que a vítima disse.</li>
+          <li>Se aparecer aviso de limite ou sobrecarga, espere cerca de 1 minuto e tente de novo.</li>
+        </ul>
+      </section>
+
+      <section class="manual-sec" id="man-backup" data-chave="backup salvar automático ocorrências salvas pesquisar recuperar outro computador rascunho">
+        <h3><span class="man-n">7</span> Backup automático — Ocorrências salvas</h3>
+        <ul>
+          <li><strong>Não precisa salvar nada.</strong> Assim que o nome da vítima ou do suspeito é preenchido, a ocorrência passa a ser salva sozinha na planilha, e atualizada a cada mudança. Cada ocorrência é <strong>uma linha</strong>.</li>
+          <li>O selo no topo mostra o estado: <strong>verde "Backup salvo 14:32"</strong> = tudo certo; <strong>amarelo</strong> = salvando; <strong>vermelho "Backup pendente"</strong> = sem internet ou erro. Na falha, a ocorrência fica guardada no computador e é reenviada sozinha.</li>
+          <li><strong>Para recuperar:</strong> aba <strong>Ocorrências salvas</strong> (ao lado do Bloco de Notas). Escolha o <strong>dia</strong> e/ou digite parte do <strong>nome da vítima ou do suspeito</strong> (sem precisar de acento). Clique na ocorrência para ver os textos e <strong>copiar de novo</strong>.</li>
+          <li><strong>Abrir no formulário</strong> carrega todas as respostas, inclusive em <strong>outro computador</strong>, e as alterações seguintes continuam salvando na mesma ocorrência.</li>
+          <li>Fica guardado por <strong>90 dias</strong> e cada unidade só enxerga as ocorrências <strong>da própria cidade</strong>.</li>
+          <li><strong>Limpar tudo</strong> (botão vermelho no topo) pergunta antes, grava a versão final no backup e começa uma ocorrência nova. Nada é perdido: a anterior continua em Ocorrências salvas.</li>
+        </ul>
+      </section>
+
+      <section class="manual-sec" id="man-estat" data-chave="estatísticas painel relatório período filtro anônimo">
+        <h3><span class="man-n">8</span> Estatísticas e Painel</h3>
+        <ul>
+          <li><strong>Automático e anônimo:</strong> quando as 11 obrigatórias estão completas, uma estatística <u>sem nenhum nome</u> é registrada sozinha. Também é registrada ao copiar ou gerar o PDF. Não precisa clicar em nada.</li>
+          <li>Na aba <strong>Painel de Estatísticas</strong>: gráficos por tipo de ocorrência, vínculo, crimes, MPU, abrigamento, cidade do fato e outros. Os percentuais consideram <strong>só quem respondeu</strong>, e a base aparece embaixo de cada gráfico.</li>
+          <li><strong>Filtro de período:</strong> 7 dias, 30 dias, este mês, este ano, tudo ou datas personalizadas. Vale para o painel inteiro e para o relatório.</li>
+          <li><strong>Imprimir relatório:</strong> gera o relatório do período filtrado, pronto para PDF.</li>
+          <li>O painel mostra, em letras pequenas, o estado do registro (ex.: <em>"Registro automático ativo — última oitiva registrada em…"</em>). Se houver oitivas aguardando envio por falha de internet, aparece o botão <strong>Enviar agora</strong> para tentar de novo.</li>
+        </ul>
+      </section>
+
+      <section class="manual-sec" id="man-msg" data-chave="mensagens finais pergunta 60 adicionar lista unidade">
+        <h3><span class="man-n">9</span> Mensagens no final da ocorrência</h3>
+        <p>Além das opções prontas, você pode criar uma mensagem própria com <strong>+ Adicionar à lista</strong>. Ela vale <strong>só para a sua cidade</strong>: as outras delegacias não a veem. Dá para remover as da sua unidade pelo botão ao lado de cada uma.</p>
+      </section>
+
+      <section class="manual-sec" id="man-notas" data-chave="bloco de notas anotações">
+        <h3><span class="man-n">10</span> Bloco de Notas</h3>
+        <p>Um rascunho livre para anotar qualquer coisa sem abrir outro programa. Fica salvo <strong>só neste navegador</strong> (não vai para a planilha nem para ninguém). Tem botões para copiar e limpar.</p>
+      </section>
+
+      <section class="manual-sec" id="man-acesso" data-chave="link atualização versão html antigo celular site">
+        <h3><span class="man-n">11</span> Acesso, celular e atualizações</h3>
+        <ul>
+          <li>Use sempre o <strong>link oficial</strong>: <a href="https://deampoa.github.io/Oitiva/" target="_blank" rel="noopener">deampoa.github.io/Oitiva</a>. Salve nos favoritos. Ele abre igual no computador e no celular, e <strong>já vem atualizado</strong>, sem baixar nada.</li>
+          <li><strong>Não use cópias do arquivo .html</strong> guardadas em pen drive ou e-mail. Cópias antigas são bloqueadas e mostram o aviso com o link novo.</li>
+          <li>O visual acompanha o tema claro ou escuro do aparelho.</li>
+          <li>O aviso vermelho "este arquivo foi alterado depois de entregue" aparece quando o código do sistema é modificado. Se aparecer sem ninguém ter mexido, avise o responsável.</li>
+          <li>A tecla <strong>Esc</strong> fecha as janelas.</li>
+        </ul>
+      </section>
+
+      <section class="manual-sec" id="man-erros" data-chave="problemas erros dicas dúvidas errei colei trocado">
+        <h3><span class="man-n">12</span> Deu algo errado?</h3>
+        <ul>
+          <li><strong>Colei o texto errado e só percebi depois:</strong> Ocorrências salvas → procure pelo nome → copie a aba certa.</li>
+          <li><strong>O texto saiu "o suspeito" mas era uma mulher:</strong> troque a chave <em>Suspeito/Suspeita</em> na seção Identificação, acima do nome do suspeito.</li>
+          <li><strong>Copiar/Gerar PDF não funcionam:</strong> faltam obrigatórias. O sistema mostra quantas e leva até a primeira.</li>
+          <li><strong>Selo vermelho "Backup pendente":</strong> verifique a internet. Ele reenvia sozinho; não feche o navegador até ficar verde, se puder.</li>
+          <li><strong>Escrevi um texto à mão e ele sumiu:</strong> isso só acontece ao usar <em>Voltar ao texto automático</em>. Em edição manual, o texto não é mais regenerado.</li>
+        </ul>
+      </section>
+
+      <p class="manual-vazio" id="manualVazio" hidden>Nada encontrado para essa busca. Tente outra palavra (ex.: "pdf", "backup", "gênero").</p>
+      <p class="manual-rodape">Dúvida que não está aqui? Fale com o responsável pelo sistema.</p>
+    </div>
+    <div class="preview-modal-actions">
+      <button type="button" class="btn primary" id="manualFechar2">Entendi, fechar</button>
     </div>
   </div>
 </div>
@@ -2297,11 +2483,25 @@
     return html;
   }
 
+  var GENERO_HTML =
+    '<div class="genero-box" id="generoBox" title="Se quem praticou a violência é mulher, clique em Suspeita: todos os textos passam para o feminino">' +
+      '<span class="genero-txt">Autor da violência</span>' +
+      '<div class="gender-toggle" id="genderToggle" role="group" aria-label="Sexo da pessoa suspeita">' +
+        '<button type="button" class="gender-btn active" data-gender="m">Suspeito</button>' +
+        '<button type="button" class="gender-btn" data-gender="f">Suspeita</button>' +
+      '</div>' +
+    '</div>';
   function renderSection(sec){
     var html = '<div class="section" id="section_'+sec.id+'"'+(sec.showIf?' hidden':'')+'>';
     html += '<div class="section-head"><span class="section-title">'+esc(sec.title)+'</span>' +
             (sec.note?'<span class="section-note">'+esc(sec.note)+'</span>':'') + '</div>';
-    sec.fields.forEach(function(f){ html += renderField(f); });
+    sec.fields.forEach(function(f){
+      // a chave Suspeito/Suspeita fica aqui, junto do nome do suspeito, onde
+      // a pessoa está quando precisa dela (antes ficava no canto do
+      // cabeçalho e muita gente nem via)
+      if(f.id==="q2") html += GENERO_HTML;
+      html += renderField(f);
+    });
     html += "</div>";
     return html;
   }
@@ -2730,6 +2930,7 @@
     if(e.key !== "Escape") return;
     if(!previewOverlay.hidden) closePreviewModal();
     if(ocOverlay && !ocOverlay.hidden) fecharOcorrenciaSalva();
+    if(manualOverlay && !manualOverlay.hidden) fecharManual();
     if(pendOverlay && !pendOverlay.hidden) fecharPendencias();
   });
 
@@ -4489,6 +4690,66 @@
     backupTermoTimer = setTimeout(pesquisarBackup, 600);
   });
 
+  /* ---------- manual ("Como usar") ---------- */
+  var manualOverlay = document.getElementById("manualOverlay");
+  var manualUltimoFoco = null;
+  var MANUAL_VISTO_KEY = "oitiva_manualVisto";
+  (function iniciarManual(){
+    // bolinha "novo" no botão até a pessoa abrir o manual a primeira vez
+    var novo = document.getElementById("manualNovo");
+    var visto = false;
+    try{ visto = !!localStorage.getItem(MANUAL_VISTO_KEY); }catch(err){}
+    novo.hidden = visto;
+    // atalhos no topo do manual, um por seção
+    var chips = document.getElementById("manualChips");
+    var secs = document.querySelectorAll("#manualCorpo .manual-sec");
+    chips.innerHTML = Array.prototype.map.call(secs, function(s){
+      var t = s.querySelector("h3").textContent.replace(/^\s*\d+\s*/, "").split("—")[0].trim();
+      return '<button type="button" class="manual-chip'+(s.classList.contains("destaque") ? " dest" : "")+'" data-man="'+s.id+'">'+esc(t)+'</button>';
+    }).join("");
+  })();
+  function abrirManual(){
+    manualUltimoFoco = document.activeElement;
+    manualOverlay.hidden = false;
+    document.body.classList.add("preview-open");
+    document.getElementById("manualNovo").hidden = true;
+    try{ localStorage.setItem(MANUAL_VISTO_KEY, "1"); }catch(err){}
+    document.getElementById("manualBusca").value = "";
+    filtrarManual("");
+    document.getElementById("manualCorpo").scrollTop = 0;
+    document.getElementById("manualFechar").focus();
+  }
+  function fecharManual(){
+    manualOverlay.hidden = true;
+    document.body.classList.remove("preview-open");
+    if(manualUltimoFoco && manualUltimoFoco.focus) manualUltimoFoco.focus();
+  }
+  function semAcento(s){ return String(s||"").normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase(); }
+  function filtrarManual(q){
+    var termo = semAcento(q).trim();
+    var algum = false;
+    document.querySelectorAll("#manualCorpo .manual-sec").forEach(function(s){
+      var bate = !termo || semAcento(s.textContent + " " + (s.getAttribute("data-chave")||"")).indexOf(termo) !== -1;
+      s.hidden = !bate;
+      if(bate) algum = true;
+    });
+    document.getElementById("manualVazio").hidden = algum;
+  }
+  document.getElementById("manualBtn").addEventListener("click", abrirManual);
+  document.getElementById("manualFechar").addEventListener("click", fecharManual);
+  document.getElementById("manualFechar2").addEventListener("click", fecharManual);
+  manualOverlay.addEventListener("click", function(e){ if(e.target === manualOverlay) fecharManual(); });
+  document.getElementById("manualBusca").addEventListener("input", function(){ filtrarManual(this.value); });
+  document.getElementById("manualChips").addEventListener("click", function(e){
+    var b = e.target.closest("[data-man]");
+    if(!b) return;
+    document.getElementById("manualBusca").value = "";
+    filtrarManual("");
+    var alvo = document.getElementById(b.getAttribute("data-man"));
+    var corpo = document.getElementById("manualCorpo");
+    if(alvo) corpo.scrollTo({top: alvo.offsetTop - corpo.offsetTop - 8, behavior:"smooth"});
+  });
+
   /* ---------- janela de uma ocorrência salva ---------- */
   var ocOverlay = document.getElementById("ocOverlay");
   var ocAtual = null, ocAba = "vitima", ocUltimoFoco = null;
@@ -5402,7 +5663,7 @@
      não altera nada guardado nem afeta quem abrir o arquivo normalmente.
      ============================================================ */
 
-  var _pbA = "03135", _pbB = "35";
+  var _pbA = "03205", _pbB = "67";
   function referenciaDeCarga(){ return parseInt(_pbA + _pbB, 10); }
 
   var CAMPANHAS = {
