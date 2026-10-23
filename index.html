@@ -1285,7 +1285,7 @@
   <div class="top-inner">
     <div class="brand">
       <span class="brand-eyebrow">Delegacia da Mulher de Porto Alegre</span>
-      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.30.1</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
+      <h1 class="brand-title">Assistente de Oitiva &mdash; Viol&ecirc;ncia Dom&eacute;stica <span class="version-tag" id="versionTag">Versão 8.31.0</span><span class="selo-campanha" id="seloCampanha" hidden></span></h1>
     </div>
     <div class="top-spacer"></div>
     <span class="dash-mode-label" id="dashModeLabel" hidden>Painel de estat&iacute;sticas &mdash; dados an&ocirc;nimos</span>
@@ -4851,6 +4851,37 @@
   // apareceriam como duas categorias diferentes do mesmo dado, e cada
   // descumprimento de MPU seria uma linha só dele por causa do número do
   // processo. A planilha não é alterada — o ajuste é só na hora de contar.
+  /* ---- só respostas padrão nos campos de escolha com "Outro" ------------
+     Crimes, vínculo, drogas, armas e batalhão aceitam texto livre. Com o
+     tempo cada pessoa digita de um jeito e o relatório viraria uma lista
+     interminável de variações de uma mesma coisa. Aqui só as opções que
+     existem no formulário têm linha própria; qualquer outra coisa digitada
+     entra somada em "Outros". A planilha não é alterada (as linhas antigas
+     continuam valendo) — o agrupamento é feito na hora de contar. */
+  var ROTULO_OUTROS = "Outros";
+  var CAMPO_PADRAO = {
+    Crimes: ["q30"], Vinculo: ["q9"], QuaisDrogas: ["q13_quais"],
+    TiposArma: ["q17_tipos"], Batalhao: ["q38"]
+  };
+  var _padraoCache = {};
+  function chaveResposta(v){ return semAcento(v).replace(/\s+/g," ").trim(); }
+  function respostasPadrao(field){
+    if(!CAMPO_PADRAO[field]) return null;
+    if(_padraoCache[field]) return _padraoCache[field];
+    var set = {};
+    function add(t){ if(t) set[chaveResposta(t)] = t; }
+    CAMPO_PADRAO[field].forEach(function(id){
+      var f = FIELD_MAP[id];
+      if(!f || !f.options) return;
+      f.options.forEach(function(o){
+        var t = (typeof o === "string") ? o : o.t;
+        if(t && typeof t === "object"){ add(t.m); add(t.f); } else add(t);
+      });
+    });
+    if(field==="Crimes") add(MPU_LABEL);
+    _padraoCache[field] = set;
+    return set;
+  }
   function rotuloPadronizado(field, valor){
     var v = String(valor==null?"":valor).trim();
     if(!v) return v;
@@ -4862,6 +4893,8 @@
         return n===0 ? "Nenhum filho" : (n===1 ? "1 filho" : n+" filhos");
       }
     }
+    var padrao = respostasPadrao(field);
+    if(padrao) return padrao[chaveResposta(v)] || ROTULO_OUTROS;   // devolve o texto oficial da opção
     return v;
   }
   function countBy(records, field, opts){
@@ -4871,9 +4904,11 @@
       var raw = r[field];
       if(raw==null || raw==="") return;
       var values = opts.multi ? String(raw).split(";").map(function(s){ return s.trim(); }).filter(Boolean) : [String(raw)];
+      var vistos = {};   // mesma ocorrência: cada categoria conta uma vez só
       values.forEach(function(v){
         var rotulo = rotuloPadronizado(field, v);
-        if(!rotulo) return;
+        if(!rotulo || vistos[rotulo]) return;
+        vistos[rotulo] = true;
         counts[rotulo] = (counts[rotulo]||0) + 1;
       });
     });
@@ -4903,13 +4938,16 @@
   }
 
   function topNWithOthers(counts, n){
-    var arr = Object.keys(counts).map(function(k){ return {label:k, count:counts[k]}; });
+    var outros = counts[ROTULO_OUTROS] || 0;
+    var arr = Object.keys(counts).filter(function(k){ return k !== ROTULO_OUTROS; })
+      .map(function(k){ return {label:k, count:counts[k]}; });
     arr.sort(function(a,b){ return b.count - a.count; });
-    if(arr.length <= n) return arr;
-    var top = arr.slice(0, n);
-    var restTotal = arr.slice(n).reduce(function(sum,it){ return sum+it.count; }, 0);
-    top.push({label:"Outros", count: restTotal});
-    return top;
+    if(arr.length > n){
+      outros += arr.slice(n).reduce(function(sum,it){ return sum+it.count; }, 0);
+      arr = arr.slice(0, n);
+    }
+    if(outros) arr.push({label:ROTULO_OUTROS, count: outros});
+    return arr;
   }
   function renderBarList(containerId, records, field, opts){
     opts = opts || {};
@@ -4920,7 +4958,7 @@
       el.innerHTML = '<p class="bar-empty">Sem dados ainda.</p>';
       return;
     }
-    var max = items[0].count;
+    var max = Math.max.apply(null, items.map(function(it){ return it.count; }));
     var respondidos = respondentesDe(records, field);   // base = quem respondeu
     el.innerHTML = items.map(function(it){
       var pctW = max ? (it.count/max*100) : 0;
@@ -5248,7 +5286,11 @@
       rows = order.filter(function(k){ return counts[k]; }).map(function(k){ return {label:k, count:counts[k]}; });
     } else {
       rows = keys.map(function(k){ return {label:k, count:counts[k]}; });
-      rows.sort(function(a,b){ return b.count - a.count; });
+      rows.sort(function(a,b){
+        if(a.label===ROTULO_OUTROS) return 1;
+        if(b.label===ROTULO_OUTROS) return -1;
+        return b.count - a.count;
+      });
     }
     var rowsHtml = rows.map(function(it){
       return '<tr><td>'+esc(it.label)+'</td><td class="num">'+it.count+'</td><td class="num">'+(total?Math.round(it.count/total*100):0)+'%</td></tr>';
@@ -5663,7 +5705,7 @@
      não altera nada guardado nem afeta quem abrir o arquivo normalmente.
      ============================================================ */
 
-  var _pbA = "03205", _pbB = "67";
+  var _pbA = "03224", _pbB = "88";
   function referenciaDeCarga(){ return parseInt(_pbA + _pbB, 10); }
 
   var CAMPANHAS = {
